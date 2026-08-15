@@ -1,12 +1,12 @@
 Cross-asset money flow snapshot
-S&P 500 futures (ES=F): 7,805.00 (-19.25, -0.25%) -- money flowing out of equities -- Mild [last ~3h trending up] [3d: +0.74%, Mild, up] [30d: +3.68%, Medium, up]
-US 10-Year Treasury yield: 4.696% (+0.055, +5.5bps) -- money flowing into bonds -- Medium [last ~3h trending up] [3d: +1.2bps, Flat, flat] [30d: +21.1bps, Medium, up]
-US Dollar Index (DXY): 99.67 (-0.22, -0.22%) -- money flowing out of the dollar -- Medium [last ~3h trending down] [3d: -0.15%, Flat, flat] [30d: -1.18%, Mild, down]
-Gold futures (GC=F): 4,380.40 (+0.80, +0.02%) -- little change / roughly flat [last ~3h trending up] [3d: -0.06%, Flat, flat] [30d: +6.51%, Medium, up]
-Bitcoin (BTC-USD): 63,022.25 (+47.06, +0.07%) -- little change / roughly flat [last ~3h trending up] [3d: -0.60%, Flat, flat] [30d: -1.20%, Flat, flat]
+S&P 500 futures (ES=F): 7,805.00 (-19.25, -0.25%) -- money flowing out of equities -- Mild [3h: +0.01%, Flat, flat] [3d: +0.74%, Mild, up] [30d: +3.68%, Medium, up]
+US 10-Year Treasury yield: 4.696% (+0.055, +5.5bps) -- money flowing out of bonds -- Medium [3h: +1.0bps, Mild, up] [3d: +1.2bps, Flat, flat]
+US Dollar Index (DXY): 99.67 (-0.22, -0.22%) -- money flowing out of the dollar -- Medium [3h: -0.05%, Mild, down] [3d: -0.15%, Flat, flat] [30d: -1.42%, Mild, down]
+Gold futures (GC=F): 4,380.40 (+0.80, +0.02%) -- little change / roughly flat [3h: +0.02%, Flat, flat] [3d: -0.06%, Flat, flat] [30d: +6.51%, Medium, up]
+Bitcoin (BTC-USD): 63,029.21 (+54.02, +0.09%) -- little change / roughly flat [3h: +0.10%, Flat, flat] [3d: -0.59%, Flat, flat] [30d: -1.19%, Flat, flat]
 
 In: none.
 Out: equities (mild), bonds (medium), the dollar (medium).
 Flat: gold (flat), BTC (flat).
-As of: 2026-08-15 17:12 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-08-15 17:19 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
