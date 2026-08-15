@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross-Asset Money Flow — As of 2026-08-15 17:19 UTC</title>
+<style>
+  :root { color-scheme: light; }
+  .viz-root {
+    --surface-1: #fcfcfb; --page-plane: #f9f9f7; --text-primary: #0b0b0b;
+    --text-secondary: #52514e; --text-muted: #898781; --gridline: #e1e0d9;
+    --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --div-in: #2a78d6; --div-in-track: #cde2fb; --div-out: #e34948;
+    --div-out-track: #f8d9d9; --div-neutral: #f0efec; --status-good: #0ca30c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark; --surface-1: #1a1a19; --page-plane: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --div-in: #3987e5; --div-in-track: #184f95; --div-out: #e66767;
+      --div-out-track: #6b2323; --div-neutral: #383835; --status-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark; --surface-1: #1a1a19; --page-plane: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --div-in: #3987e5; --div-in-track: #184f95; --div-out: #e66767;
+    --div-out-track: #6b2323; --div-neutral: #383835; --status-good: #0ca30c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--page-plane); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .viz-root { background: var(--page-plane); min-height: 100vh; padding: 28px 16px 48px; display: flex; justify-content: center; }
+  .card { width: 100%; max-width: 760px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 28px 26px 22px; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+  h1 { margin: 0; font-size: 19px; font-weight: 650; color: var(--text-primary); letter-spacing: -0.01em; }
+  .subtitle { margin: 6px 0 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; max-width: 46ch; }
+  .theme-toggle { flex: none; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .theme-toggle:hover { color: var(--text-primary); border-color: var(--text-muted); }
+  .timestamp { margin-top: 14px; font-size: 12px; color: var(--text-muted); }
+  .legend { display: flex; align-items: center; gap: 18px; margin: 20px 0 6px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.out { background: var(--div-out); } .dot.in { background: var(--div-in); } .dot.flat { background: var(--baseline); }
+  .rows { margin-top: 8px; }
+  .row { padding: 16px 0; border-top: 1px solid var(--gridline); position: relative; }
+  .row:first-child { border-top: none; }
+  .row-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .asset-id { display: flex; align-items: baseline; gap: 7px; min-width: 0; flex-wrap: wrap; }
+  .asset-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .asset-ticker { font-size: 11px; color: var(--text-muted); }
+  .badge { margin-left: 6px; font-size: 10.5px; font-weight: 600; color: var(--status-good); border: 1px solid currentColor; border-radius: 999px; padding: 1px 7px 2px; white-space: nowrap; }
+  .asset-price { text-align: right; flex: none; }
+  .price-value { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .price-delta { display: block; font-size: 11.5px; color: var(--text-secondary); margin-top: 1px; }
+  .row-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; }
+  .flow-tag { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  .flow-tag .dot { width: 7px; height: 7px; flex: none; margin-top: 2px; }
+  .row[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: 0; right: 0; bottom: -6px; transform: translateY(100%); background: var(--text-primary); color: var(--surface-1); font-size: 11.5px; line-height: 1.5; padding: 8px 10px; border-radius: 8px; z-index: 5; box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
+  .note { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--gridline); font-size: 11.5px; color: var(--text-muted); line-height: 1.6; }
+  .blurb { margin-top: 14px; padding: 14px 16px; background: var(--div-neutral); border-radius: 10px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+  .blurb strong { color: var(--text-primary); }
+  details.table-toggle { margin-top: 10px; }
+  details.table-toggle summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); user-select: none; }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11.5px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 6px 7px; border-bottom: 1px solid var(--gridline); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  table.data-table th { color: var(--text-muted); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.data-table td.num { color: var(--text-primary); }
+  .timeframe-bars { display: flex; gap: 12px; margin-top: 4px; }
+  .tf-col { flex: 1; min-width: 0; }
+  .tf-label { font-size: 9.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; text-align: center; }
+  .tf-track { position: relative; display: flex; align-items: center; height: 14px; }
+  .tf-half { width: 50%; height: 12px; display: flex; align-items: center; position: relative; }
+  .tf-half-out { justify-content: flex-end; padding-right: 1px; } .tf-half-in { justify-content: flex-start; padding-left: 1px; }
+  .tf-fill { height: 12px; min-width: 0; }
+  .tf-fill.out { background: var(--div-out); border-radius: 3px 0 0 3px; }
+  .tf-fill.in { background: var(--div-in); border-radius: 0 3px 3px 0; }
+  .tf-baseline { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--baseline); transform: translateX(-0.5px); }
+  .tf-flat-dot { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: var(--baseline); transform: translate(-50%, -50%); }
+  .tf-caption { font-size: 10px; color: var(--text-secondary); margin-top: 5px; text-align: center; }
+  .tf-na { font-size: 10px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 5px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h1>Cross-asset money flow</h1>
+        <p class="subtitle">Where money is moving right now across equities, bonds, the dollar, gold and bitcoin — over the last 3 hours, 3 days, and 30 days.</p>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
+    </div>
+    <div class="timestamp">As of 2026-08-15 17:19 UTC · yfinance / Yahoo real-time feed</div>
+    <div class="legend">
+      <div class="legend-item"><span class="dot out"></span>Money flowing out</div>
+      <div class="legend-item"><span class="dot flat"></span>Flat</div>
+      <div class="legend-item"><span class="dot in"></span>Money flowing in</div>
+    </div>
+    <div class="rows">
+      <div class="row" data-tip="S&amp;P 500 futures 7,805.00, ▼ 19.25 · -0.25% since previous close. Flat over the last 3 hours, but flowing in over the last 3 days and 30 days.">
+        <div class="row-top">
+          <div class="asset-id">
+            <span class="asset-name">S&amp;P 500 futures</span>
+            <span class="asset-ticker">ES=F</span>
+            <span class="badge">★ Biggest mover</span>
+          </div>
+          <div class="asset-price">
+            <span class="price-value">7,805.00</span>
+            <span class="price-delta">▼ 19.25 · -0.25%</span>
+          </div>
+        </div>
+        <div class="timeframe-bars">
+<div class="tf-col"><div class="tf-label">3H</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">+0.01% · Flat</div></div><div class="tf-col"><div class="tf-label">3D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:34%"></div></div></div><div class="tf-caption">+0.74% · Mild</div></div><div class="tf-col"><div class="tf-label">30D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:62%"></div></div></div><div class="tf-caption">+3.68% · Medium</div></div>
+        </div>
+        <div class="row-bottom">
+          <span class="flow-tag"><span class="dot flat"></span>Flat over the last 3 hours, but flowing in over the last 3 days and 30 days.</span>
+        </div>
+      </div>
+      <div class="row" data-tip="US 10-Year Treasury yield 4.696%, ▲ 0.055 · +5.5bps since previous close. Flowing out over the last 3 hours, but flat over the last 3 days (30 days data unavailable).">
+        <div class="row-top">
+          <div class="asset-id">
+            <span class="asset-name">US 10-Year Treasury yield</span>
+            <span class="asset-ticker"></span>
+            
+          </div>
+          <div class="asset-price">
+            <span class="price-value">4.696%</span>
+            <span class="price-delta">▲ 0.055 · +5.5bps</span>
+          </div>
+        </div>
+        <div class="timeframe-bars">
+<div class="tf-col"><div class="tf-label">3H</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:34%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">+1.0bps · Mild</div></div><div class="tf-col"><div class="tf-label">3D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">+1.2bps · Flat</div></div><div class="tf-col"><div class="tf-label">30D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-na">n/a</div></div>
+        </div>
+        <div class="row-bottom">
+          <span class="flow-tag"><span class="dot flat"></span>Flowing out over the last 3 hours, but flat over the last 3 days (30 days data unavailable).</span>
+        </div>
+      </div>
+      <div class="row" data-tip="US Dollar Index 99.67, ▼ 0.22 · -0.22% since previous close. Flowing out over the last 3 hours; flat over the last 3 days, and flowing out over the last 30 days.">
+        <div class="row-top">
+          <div class="asset-id">
+            <span class="asset-name">US Dollar Index</span>
+            <span class="asset-ticker">DX-Y.NYB</span>
+            
+          </div>
+          <div class="asset-price">
+            <span class="price-value">99.67</span>
+            <span class="price-delta">▼ 0.22 · -0.22%</span>
+          </div>
+        </div>
+        <div class="timeframe-bars">
+<div class="tf-col"><div class="tf-label">3H</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:34%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-0.05% · Mild</div></div><div class="tf-col"><div class="tf-label">3D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-0.15% · Flat</div></div><div class="tf-col"><div class="tf-label">30D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:34%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-1.42% · Mild</div></div>
+        </div>
+        <div class="row-bottom">
+          <span class="flow-tag"><span class="dot flat"></span>Flowing out over the last 3 hours; flat over the last 3 days, and flowing out over the last 30 days.</span>
+        </div>
+      </div>
+      <div class="row" data-tip="Gold futures 4,380.40, ▲ 0.80 · +0.02% since previous close. Flat over the last 3 hours and 3 days, but flowing in over the last 30 days.">
+        <div class="row-top">
+          <div class="asset-id">
+            <span class="asset-name">Gold futures</span>
+            <span class="asset-ticker">GC=F</span>
+            
+          </div>
+          <div class="asset-price">
+            <span class="price-value">4,380.40</span>
+            <span class="price-delta">▲ 0.80 · +0.02%</span>
+          </div>
+        </div>
+        <div class="timeframe-bars">
+<div class="tf-col"><div class="tf-label">3H</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">+0.02% · Flat</div></div><div class="tf-col"><div class="tf-label">3D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-0.06% · Flat</div></div><div class="tf-col"><div class="tf-label">30D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:62%"></div></div></div><div class="tf-caption">+6.51% · Medium</div></div>
+        </div>
+        <div class="row-bottom">
+          <span class="flow-tag"><span class="dot flat"></span>Flat over the last 3 hours and 3 days, but flowing in over the last 30 days.</span>
+        </div>
+      </div>
+      <div class="row" data-tip="Bitcoin 63,029.21, ▲ 54.02 · +0.09% since previous close. Flat across the last 3 hours, 3 days and 30 days — no real signal.">
+        <div class="row-top">
+          <div class="asset-id">
+            <span class="asset-name">Bitcoin</span>
+            <span class="asset-ticker">BTC-USD</span>
+            
+          </div>
+          <div class="asset-price">
+            <span class="price-value">63,029.21</span>
+            <span class="price-delta">▲ 54.02 · +0.09%</span>
+          </div>
+        </div>
+        <div class="timeframe-bars">
+<div class="tf-col"><div class="tf-label">3H</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">+0.10% · Flat</div></div><div class="tf-col"><div class="tf-label">3D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-0.59% · Flat</div></div><div class="tf-col"><div class="tf-label">30D</div><div class="tf-track"><div class="tf-half tf-half-out"><div class="tf-fill out" style="width:0%"></div></div><div class="tf-baseline"><div class="tf-flat-dot"></div></div><div class="tf-half tf-half-in"><div class="tf-fill in" style="width:0%"></div></div></div><div class="tf-caption">-1.19% · Flat</div></div>
+        </div>
+        <div class="row-bottom">
+          <span class="flow-tag"><span class="dot flat"></span>Flat across the last 3 hours, 3 days and 30 days — no real signal.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="blurb"><strong>Across all three windows:</strong> S&amp;P 500 futures, US 10-Year Treasury yield, US Dollar Index, Gold futures show a different flow direction between the short- and long-term windows this run; Bitcoin shows no real signal in any window.</div>
+
+    <details class="table-toggle">
+      <summary>Show data table</summary>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Value</th><th>Since prev close</th><th>3H</th><th>3D</th><th>30D</th></tr></thead>
+        <tbody>
+<tr><td>S&amp;P 500 futures</td><td class="num">7,805.00</td><td class="num">-0.25% (Mild)</td><td class="num">+0.01% (Flat)</td><td class="num">+0.74% (Mild)</td><td class="num">+3.68% (Medium)</td></tr><tr><td>US 10-Year Treasury yield</td><td class="num">4.696%</td><td class="num">+5.500 (Medium)</td><td class="num">+1.0bps (Mild)</td><td class="num">+1.2bps (Flat)</td><td class="num">n/a</td></tr><tr><td>US Dollar Index</td><td class="num">99.67</td><td class="num">-0.22% (Medium)</td><td class="num">-0.05% (Mild)</td><td class="num">-0.15% (Flat)</td><td class="num">-1.42% (Mild)</td></tr><tr><td>Gold futures</td><td class="num">4,380.40</td><td class="num">+0.02% (Flat)</td><td class="num">+0.02% (Flat)</td><td class="num">-0.06% (Flat)</td><td class="num">+6.51% (Medium)</td></tr><tr><td>Bitcoin</td><td class="num">63,029.21</td><td class="num">+0.09% (Flat)</td><td class="num">+0.10% (Flat)</td><td class="num">-0.59% (Flat)</td><td class="num">-1.19% (Flat)</td></tr>
+        </tbody>
+      </table>
+    </details>
+    <p class="note">Automated informational snapshot from the moneyflow GitHub Actions feed — not financial advice. 30-day data was unavailable this run for: US 10-Year Treasury yield.</p>
+  </div>
+</div>
+<script>
+  const btn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  function syncLabel() {
+    const explicit = root.getAttribute('data-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = explicit ? explicit === 'dark' : prefersDark;
+    btn.textContent = isDark ? 'Light mode' : 'Dark mode';
+  }
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentlyDark = current ? current === 'dark' : prefersDark;
+    root.setAttribute('data-theme', currentlyDark ? 'light' : 'dark');
+    syncLabel();
+  });
+  syncLabel();
+</script>
+</body>
+</html>
