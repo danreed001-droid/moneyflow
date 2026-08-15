@@ -14,6 +14,9 @@ on:
     - cron: '55 19 * * 1-5'
   workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
 
+permissions:
+  contents: write   # needed so this workflow can commit latest.txt back to the repo
+
 jobs:
   snapshot:
     runs-on: ubuntu-latest
@@ -31,3 +34,11 @@ jobs:
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python money_flow.py
+
+      - name: Commit latest report
+        run: |
+          git config user.name "money-flow-bot"
+          git config user.email "actions@github.com"
+          git add latest.txt
+          git diff --staged --quiet || git commit -m "Update snapshot $(date -u +%FT%TZ)"
+          git push
