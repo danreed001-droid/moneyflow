@@ -36,6 +36,24 @@ THRESHOLDS = {
 }
 TNX_BPS_THRESHOLDS = [(2, "Flat"), (4, "Mild"), (8, "Medium"), (float("inf"), "Heavy")]
 
+# 3-day thresholds -- roughly 2-3x the intraday ladders above.
+THRESHOLDS_3D = {
+    "ES=F":     [(0.3, "Flat"), (0.8, "Mild"), (2.0, "Medium"), (float("inf"), "Heavy")],
+    "DX-Y.NYB": [(0.2, "Flat"), (0.5, "Mild"), (1.2, "Medium"), (float("inf"), "Heavy")],
+    "GC=F":     [(0.4, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
+    "BTC-USD":  [(1.0, "Flat"), (3.0, "Mild"), (6.0, "Medium"), (float("inf"), "Heavy")],
+}
+TNX_BPS_THRESHOLDS_3D = [(4, "Flat"), (8, "Mild"), (15, "Medium"), (float("inf"), "Heavy")]
+
+# 30-day thresholds -- much larger cumulative moves expected.
+THRESHOLDS_30D = {
+    "ES=F":     [(1.0, "Flat"), (3.0, "Mild"), (7.0, "Medium"), (float("inf"), "Heavy")],
+    "DX-Y.NYB": [(0.7, "Flat"), (2.0, "Mild"), (4.5, "Medium"), (float("inf"), "Heavy")],
+    "GC=F":     [(1.5, "Flat"), (4.0, "Mild"), (9.0, "Medium"), (float("inf"), "Heavy")],
+    "BTC-USD":  [(4.0, "Flat"), (10.0, "Mild"), (20.0, "Medium"), (float("inf"), "Heavy")],
+}
+TNX_BPS_THRESHOLDS_30D = [(10, "Flat"), (20, "Mild"), (40, "Medium"), (float("inf"), "Heavy")]
+
 # (flow target name, word when money flows IN, word when money flows OUT)
 FLOW_WORDS = {
     "ES=F":     ("equities", "into", "out of"),
@@ -60,6 +78,44 @@ def fetch_intraday(ticker, interval="15m", period="1d"):
     except Exception as e:
         print(f"  [warn] intraday fetch failed for {ticker}: {e}", file=sys.stderr)
         return None
+
+
+def fetch_daily(ticker, period="90d"):
+    """Daily bars, far enough back to safely index 3 and 30 sessions ago
+    for every asset in ASSETS -- including BTC, which trades every calendar
+    day, so 90 calendar days comfortably covers 31+ session bars for the
+    weekday-only tickers too."""
+    try:
+        hist = yf.Ticker(ticker).history(period=period, interval="1d")
+        return hist if len(hist) else None
+    except Exception as e:
+        print(f"  [warn] daily fetch failed for {ticker}: {e}", file=sys.stderr)
+        return None
+
+
+def multi_day_tag(ticker, daily_hist, sessions_back, label, pct_ladder, bps_ladder):
+    """Build a ' [Nd: +X%, Magnitude, direction]' tag for the given lookback,
+    or '' if there isn't enough daily history to compute it."""
+    if daily_hist is None or len(daily_hist) <= sessions_back:
+        return ""
+
+    closes = daily_hist["Close"]
+    c_now = closes.iloc[-1]
+    c_then = closes.iloc[-1 - sessions_back]
+
+    if ticker == "^TNX":
+        change = c_now - c_then
+        bps = change * 100
+        mag = magnitude(abs(bps), bps_ladder)
+        direction = "flat" if mag == "Flat" else ("up" if bps > 0 else "down")
+        return f" [{label}: {bps:+.1f}bps, {mag}, {direction}]"
+    else:
+        if not c_then:
+            return ""
+        pct = (c_now - c_then) / c_then * 100
+        mag = magnitude(abs(pct), pct_ladder)
+        direction = "flat" if mag == "Flat" else ("up" if pct > 0 else "down")
+        return f" [{label}: {pct:+.2f}%, {mag}, {direction}]"
 
 
 def build_report():
@@ -95,6 +151,14 @@ def build_report():
             delta = closes.iloc[-1] - three_hr_ago
             direction = "up" if delta > 0 else ("down" if delta < 0 else "flat")
             trend_note = f" [last ~3h trending {direction}]"
+
+        # --- 3-day / 30-day additions ---
+        daily_hist = fetch_daily(ticker)
+        pct_ladder_3d = THRESHOLDS_3D.get(ticker)
+        pct_ladder_30d = THRESHOLDS_30D.get(ticker)
+        trend_note += multi_day_tag(ticker, daily_hist, 3, "3d", pct_ladder_3d, TNX_BPS_THRESHOLDS_3D)
+        trend_note += multi_day_tag(ticker, daily_hist, 30, "30d", pct_ladder_30d, TNX_BPS_THRESHOLDS_30D)
+        # --- end additions ---
 
         if ticker == "^TNX":
             bps = change * 100
