@@ -3,14 +3,18 @@ name: Money Flow Snapshot
 on:
   schedule:
     # All times UTC. Currently set for US Eastern Daylight Time (UTC-4):
+    #   07:00 ET -> 11:00 UTC  (pre-market)
     #   09:35 ET -> 13:35 UTC  (near market open)
     #   12:30 ET -> 16:30 UTC  (midday)
+    #   15:10 ET -> 19:10 UTC  (late afternoon)
     #   15:55 ET -> 19:55 UTC  (near close)
     # NOTE: cron does not auto-adjust for DST. When the US switches to
     # Standard Time (UTC-5, ~Nov-Mar), add 1 hour to each time below
-    # (14:35 / 17:30 / 20:55) if you want the same local times.
+    # (12:00 / 14:35 / 17:30 / 20:10 / 20:55) if you want the same local times.
+    - cron: '0 11 * * 1-5'
     - cron: '35 13 * * 1-5'
     - cron: '30 16 * * 1-5'
+    - cron: '10 19 * * 1-5'
     - cron: '55 19 * * 1-5'
   workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
 
