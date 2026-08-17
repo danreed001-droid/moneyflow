@@ -21,6 +21,7 @@ import os
 import sys
 import html
 import urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 
 try:
@@ -115,6 +116,221 @@ def fetch_daily(ticker, period="90d"):
     except Exception as e:
         print(f"  [warn] daily fetch failed for {ticker}: {e}", file=sys.stderr)
         return None
+
+
+# --------------------------------------------------------------------------
+# Futures watchlist -- full board snapshot + hourly bar chart per symbol
+# --------------------------------------------------------------------------
+
+# (ticker, display name, category) -- the full futures board Yahoo Finance
+# lists under Markets -> Commodities/Futures (finance.yahoo.com/markets/commodities/),
+# not just the index/treasury/metals subset visible in a single watchlist screenshot.
+FUTURES = [
+    # -- Equity index --
+    ("ES=F", "E-Mini S&P 500", "Equity Index"),
+    ("YM=F", "Mini Dow Jones", "Equity Index"),
+    ("NQ=F", "Nasdaq 100", "Equity Index"),
+    ("RTY=F", "E-mini Russell 2000", "Equity Index"),
+    # -- Treasuries --
+    ("ZB=F", "US Treasury Bond", "Treasuries"),
+    ("ZN=F", "10-Year T-Note", "Treasuries"),
+    ("ZF=F", "5-Year T-Note", "Treasuries"),
+    ("ZT=F", "2-Year T-Note", "Treasuries"),
+    # -- Metals --
+    ("GC=F", "Gold", "Metals"),
+    ("MGC=F", "Micro Gold", "Metals"),
+    ("SI=F", "Silver", "Metals"),
+    ("SIL=F", "Micro Silver", "Metals"),
+    ("PL=F", "Platinum", "Metals"),
+    ("PA=F", "Palladium", "Metals"),
+    ("HG=F", "Copper", "Metals"),
+    # -- Energy --
+    ("CL=F", "Crude Oil", "Energy"),
+    ("HO=F", "Heating Oil", "Energy"),
+    ("NG=F", "Natural Gas", "Energy"),
+    ("RB=F", "RBOB Gasoline", "Energy"),
+    ("BZ=F", "Brent Crude Oil", "Energy"),
+    ("B0=F", "Mont Belvieu Propane", "Energy"),
+    # -- Grains / agriculture --
+    ("ZC=F", "Corn", "Agriculture"),
+    ("ZO=F", "Oats", "Agriculture"),
+    ("KE=F", "KC HRW Wheat", "Agriculture"),
+    ("ZR=F", "Rough Rice", "Agriculture"),
+    ("ZM=F", "Soybean Meal", "Agriculture"),
+    ("ZL=F", "Soybean Oil", "Agriculture"),
+    ("ZS=F", "Soybean", "Agriculture"),
+    # -- Livestock --
+    ("GF=F", "Feeder Cattle", "Livestock"),
+    ("HE=F", "Lean Hogs", "Livestock"),
+    ("LE=F", "Live Cattle", "Livestock"),
+    # -- Softs --
+    ("CC=F", "Cocoa", "Softs"),
+    ("KC=F", "Coffee", "Softs"),
+    ("CT=F", "Cotton", "Softs"),
+    ("LBS=F", "Lumber", "Softs"),
+    ("OJ=F", "Orange Juice", "Softs"),
+    ("SB=F", "Sugar", "Softs"),
+]
+
+FUTURES_CATEGORY_ORDER = ["Equity Index", "Treasuries", "Metals", "Energy", "Agriculture", "Livestock", "Softs"]
+
+FUTURES_WINDOW_HOURS = 50
+
+# Generic magnitude ladder for the 3h flow blurb -- one ladder across every
+# futures symbol (unlike the per-asset-tuned ladders above) since we're
+# summarizing ~35 instruments at once, not tracking a handful precisely.
+FUTURES_3H_LADDER = [(0.1, "Flat"), (0.3, "Mild"), (0.8, "Medium"), (float("inf"), "Heavy")]
+
+SPARK_BLOCKS = "▁▂▃▄▅▆▇█"  # ▁..█
+
+
+def fetch_hourly_window(ticker, hours=FUTURES_WINDOW_HOURS, period="7d"):
+    """Last `hours` 1h-interval closes for `ticker`, or None if unavailable.
+    period="7d" comfortably covers 50 hourly bars even across a weekend gap,
+    since CME futures trade nearly 23h/day Sun evening - Fri evening ET."""
+    try:
+        hist = yf.Ticker(ticker).history(period=period, interval="60m")
+        if hist is None or hist.empty:
+            return None
+        closes = hist["Close"].dropna()
+        return closes.tail(hours) if len(closes) else None
+    except Exception as e:
+        print(f"  [warn] hourly fetch failed for {ticker}: {e}", file=sys.stderr)
+        return None
+
+
+def compute_futures_3h_flow(closes):
+    """Given a list of hourly closes (oldest -> newest), return the ~3-hour
+    price-flow info {pct, mag, flow}, or None if there aren't at least 4
+    hourly bars to compare against. Futures are priced instruments (not
+    yields), so up == money flowing in, same convention as ES=F/GC=F above."""
+    if len(closes) < 4:
+        return None
+    last, then = closes[-1], closes[-4]
+    if not then:
+        return None
+    change = last - then
+    pct = change / then * 100
+    mag = magnitude(abs(pct), FUTURES_3H_LADDER)
+    flow = "flat" if mag == "Flat" else ("in" if change > 0 else "out")
+    return {"pct": pct, "mag": mag, "flow": flow}
+
+
+def build_futures(hours=FUTURES_WINDOW_HOURS):
+    """Returns a list of dicts, one per FUTURES entry, each carrying the last
+    `hours` hourly closes, the price/change over that window, and a 3h
+    money-flow read used for the blurb."""
+    out = []
+    for ticker, name, category in FUTURES:
+        closes = fetch_hourly_window(ticker, hours=hours)
+        if closes is None or len(closes) < 2:
+            out.append({"ticker": ticker, "name": name, "category": category, "unavailable": True})
+            continue
+        closes_list = [float(c) for c in closes]
+        last = closes_list[-1]
+        first = closes_list[0]
+        change = last - first
+        pct = (change / first * 100) if first else 0.0
+        out.append({
+            "ticker": ticker,
+            "name": name,
+            "category": category,
+            "unavailable": False,
+            "last": last,
+            "change": change,
+            "pct": pct,
+            "closes": closes_list,
+            "hours_covered": len(closes_list),
+            "flow_3h": compute_futures_3h_flow(closes_list),
+        })
+    return out
+
+
+def build_futures_blurb(futures):
+    """Plain-English summary of where money is flowing across the futures
+    board over the last ~3 hours, aggregated by category (Equity Index,
+    Treasuries, Metals, Energy, Agriculture, Livestock, Softs) since listing
+    all ~35 symbols individually would be unreadable."""
+    cat_flows = {}
+    movers = []
+    for f in futures:
+        if f.get("unavailable"):
+            continue
+        fl = f.get("flow_3h")
+        if not fl:
+            continue
+        cat_flows.setdefault(f["category"], []).append(fl["flow"])
+        movers.append(f)
+
+    if not cat_flows:
+        return "No 3-hour flow data available this run."
+
+    cat_summary = {}
+    for cat, flows in cat_flows.items():
+        counts = Counter(flows)
+        top_flow, top_n = counts.most_common(1)[0]
+        tied = sum(1 for v in counts.values() if v == top_n) > 1
+        cat_summary[cat] = "mixed" if tied else top_flow
+
+    ordered_cats = [c for c in FUTURES_CATEGORY_ORDER if c in cat_summary]
+    in_cats = [c for c in ordered_cats if cat_summary[c] == "in"]
+    out_cats = [c for c in ordered_cats if cat_summary[c] == "out"]
+    flat_cats = [c for c in ordered_cats if cat_summary[c] == "flat"]
+    mixed_cats = [c for c in ordered_cats if cat_summary[c] == "mixed"]
+
+    parts = []
+    if in_cats:
+        parts.append(f"flowing into {', '.join(in_cats)}")
+    if out_cats:
+        parts.append(f"flowing out of {', '.join(out_cats)}")
+    if flat_cats:
+        parts.append(f"roughly flat in {', '.join(flat_cats)}")
+    if mixed_cats:
+        parts.append(f"mixed (no consistent direction) in {', '.join(mixed_cats)}")
+
+    sentence = "Over the last 3 hours, money across the futures board is " + "; ".join(parts) + "."
+
+    if movers:
+        biggest = max(movers, key=lambda f: abs(f["flow_3h"]["pct"]))
+        sentence += (
+            f" Biggest 3h mover: {biggest['name']} ({biggest['ticker']}) "
+            f"{biggest['flow_3h']['pct']:+.2f}%, {biggest['flow_3h']['mag']}."
+        )
+    return sentence
+
+
+def text_sparkline(values):
+    """Compress a series of closes into an 8-level unicode block sparkline,
+    for the plain-text report where an SVG bar chart isn't possible."""
+    if not values:
+        return ""
+    lo, hi = min(values), max(values)
+    span = hi - lo
+    n = len(SPARK_BLOCKS) - 1
+    if span == 0:
+        return SPARK_BLOCKS[0] * len(values)
+    return "".join(SPARK_BLOCKS[min(n, int((v - lo) / span * n))] for v in values)
+
+
+def render_futures_text(futures, hours=FUTURES_WINDOW_HOURS):
+    """Plain-text lines for the Futures watchlist section of latest.txt."""
+    lines = [f"Futures watchlist (hourly closes, last {hours}h):"]
+    current_cat = None
+    for f in futures:
+        if f["category"] != current_cat:
+            current_cat = f["category"]
+            lines.append(f"  -- {current_cat} --")
+        if f["unavailable"]:
+            lines.append(f"  {f['ticker']:<7} {f['name']:<20} DATA UNAVAILABLE")
+            continue
+        spark = text_sparkline(f["closes"])
+        lines.append(
+            f"  {f['ticker']:<7} {f['name']:<20} {f['last']:,.3f} "
+            f"({f['change']:+,.3f}, {f['pct']:+.2f}%)  {spark}"
+        )
+    lines.append("")
+    lines.append(build_futures_blurb(futures))
+    return lines
 
 
 def flow_direction(ticker, raw_direction):
@@ -467,6 +683,84 @@ def render_table_row(asset):
     return f'<tr><td>{cells[0]}</td>{tds}</tr>'
 
 
+def render_futures_bars_svg(closes, width=150, height=32):
+    """Small bar chart (one bar per hourly close) as an inline SVG string.
+    Bar height is min/max-normalized within the window; each bar is colored
+    by whether that hour's close is up or down vs. the previous hour."""
+    n = len(closes)
+    if n == 0:
+        return f'<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"></svg>'
+    lo, hi = min(closes), max(closes)
+    span = (hi - lo) or 1.0
+    gap = 1.0
+    bar_w = max(0.6, (width - gap * (n - 1)) / n)
+    rects = []
+    for i, c in enumerate(closes):
+        frac = (c - lo) / span
+        bar_h = max(1.5, frac * (height - 2))
+        x = i * (bar_w + gap)
+        y = height - bar_h
+        prev = closes[i - 1] if i > 0 else c
+        color = "var(--div-in)" if c >= prev else "var(--div-out)"
+        rects.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{bar_w:.2f}" height="{bar_h:.2f}" fill="{color}"/>')
+    return (
+        f'<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
+        f'preserveAspectRatio="none" role="img" aria-label="Hourly bar chart">{"".join(rects)}</svg>'
+    )
+
+
+def render_futures_row(f):
+    esc = html.escape
+    if f["unavailable"]:
+        return (
+            f'      <div class="fut-row">'
+            f'<div class="fut-id"><span class="fut-ticker">{esc(f["ticker"])}</span>'
+            f'<span class="fut-name">{esc(f["name"])}</span></div>'
+            f'<div class="fut-na">data unavailable</div></div>\n'
+        )
+    delta_class = "in" if f["change"] >= 0 else "out"
+    arrow = "▲" if f["change"] >= 0 else "▼"
+    chart_svg = render_futures_bars_svg(f["closes"])
+    return f'''      <div class="fut-row">
+        <div class="fut-id">
+          <span class="fut-ticker">{esc(f["ticker"])}</span>
+          <span class="fut-name">{esc(f["name"])}</span>
+        </div>
+        <div class="fut-price">
+          <span class="fut-last">{f["last"]:,.3f}</span>
+          <span class="fut-delta {delta_class}">{arrow} {f["change"]:+,.3f} ({f["pct"]:+.2f}%)</span>
+        </div>
+        <div class="fut-chart">{chart_svg}</div>
+      </div>
+'''
+
+
+def render_futures_card(futures, hours=FUTURES_WINDOW_HOURS):
+    esc = html.escape
+    body = []
+    current_cat = None
+    for f in futures:
+        if f["category"] != current_cat:
+            current_cat = f["category"]
+            body.append(f'      <div class="fut-category">{esc(current_cat)}</div>\n')
+        body.append(render_futures_row(f))
+    rows_html = "".join(body)
+    blurb = esc(build_futures_blurb(futures))
+
+    return f'''  <div class="card">
+    <div class="card-head">
+      <div>
+        <h1>Futures watchlist</h1>
+        <p class="subtitle">Full board snapshot — hourly closes over the last {hours} hours per symbol, across equity index, treasuries, metals, energy, agriculture, livestock and softs.</p>
+      </div>
+    </div>
+    <div class="fut-rows">
+{rows_html}    </div>
+    <div class="blurb"><strong>Futures flow (last 3h):</strong> {blurb}</div>
+  </div>
+'''
+
+
 CSS = """
   :root { color-scheme: light; }
   .viz-root {
@@ -543,6 +837,21 @@ CSS = """
   .tf-flat-dot { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: var(--baseline); transform: translate(-50%, -50%); }
   .tf-caption { font-size: 10px; color: var(--text-secondary); margin-top: 5px; text-align: center; }
   .tf-na { font-size: 10px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 5px; }
+  .stack { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 20px; }
+  .fut-rows { margin-top: 8px; }
+  .fut-category { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 2px; }
+  .fut-category:first-child { margin-top: 4px; }
+  .fut-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--gridline); }
+  .fut-row:first-child { border-top: none; }
+  .fut-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .fut-ticker { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .fut-name { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fut-price { text-align: right; flex: none; display: flex; flex-direction: column; gap: 2px; }
+  .fut-last { font-size: 13px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .fut-delta { font-size: 11px; font-variant-numeric: tabular-nums; }
+  .fut-delta.in { color: var(--div-in); } .fut-delta.out { color: var(--div-out); }
+  .fut-chart { flex: none; width: 150px; height: 32px; }
+  .fut-na { flex: none; font-size: 11px; color: var(--text-muted); font-style: italic; }
 """
 
 SCRIPT = """
@@ -565,7 +874,7 @@ SCRIPT = """
 """
 
 
-def render_html(assets, now):
+def render_html(assets, now, futures=None):
     esc = html.escape
     as_of = now.strftime("%Y-%m-%d %H:%M UTC")
     available_assets = [a for a in assets if not a.get("unavailable")]
@@ -583,6 +892,8 @@ def render_html(assets, now):
     if missing_30d:
         note_extra = f" 30-day data was unavailable this run for: {esc(', '.join(missing_30d))}."
 
+    futures_card = render_futures_card(futures) if futures else ""
+
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -593,6 +904,7 @@ def render_html(assets, now):
 </head>
 <body>
 <div class="viz-root">
+<div class="stack">
   <div class="card">
     <div class="card-head">
       <div>
@@ -623,6 +935,7 @@ def render_html(assets, now):
     </details>
     <p class="note">Automated informational snapshot from the moneyflow GitHub Actions feed — not financial advice.{note_extra}</p>
   </div>
+{futures_card}</div>
 </div>
 <script>{SCRIPT}</script>
 </body>
@@ -643,27 +956,30 @@ def send_ntfy(text, topic):
 
 def main():
     report, assets, now = build_report()
-    print(report)
+    futures = build_futures()
+    full_report = report + "\n\n" + "\n".join(render_futures_text(futures))
+    print(full_report)
 
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
         with open(summary_path, "a") as f:
-            f.write("## Money Flow Snapshot\n\n```\n" + report + "\n```\n")
+            f.write("## Money Flow Snapshot\n\n```\n" + full_report + "\n```\n")
 
-    # Plain-text report (unchanged format), read by e.g. a Claude scheduled
-    # task that fetches the public raw URL without needing GitHub API/auth.
+    # Plain-text report (cross-asset section unchanged, futures watchlist
+    # appended below it), read by e.g. a Claude scheduled task that fetches
+    # the public raw URL without needing GitHub API/auth.
     with open("latest.txt", "w") as f:
-        f.write(report + "\n")
+        f.write(full_report + "\n")
 
     # Self-contained HTML visual, always up to date in the repo. Name it
     # index.html so it also works out of the box if you enable GitHub Pages
     # (Settings -> Pages -> Deploy from branch -> main -> / (root)).
     with open("index.html", "w") as f:
-        f.write(render_html(assets, now))
+        f.write(render_html(assets, now, futures))
 
     topic = os.environ.get("NTFY_TOPIC")
     if topic:
-        send_ntfy(report, topic)
+        send_ntfy(full_report, topic)
     else:
         print("[info] NTFY_TOPIC not set -- skipping push notification.")
 
