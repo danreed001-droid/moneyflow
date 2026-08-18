@@ -1,41 +1,41 @@
 Cross-asset money flow snapshot
-S&P 500 futures (ES=F): 7,719.75 (-24.50, -0.32%) -- money flowing out of equities -- Medium [3h: -0.08%, Mild, down] [3d: -1.31%, Medium, down] [30d: +2.23%, Mild, up]
+S&P 500 futures (ES=F): 7,715.25 (-29.00, -0.37%) -- money flowing out of equities -- Medium [3h: -0.01%, Flat, flat] [3d: -1.37%, Medium, down] [30d: +2.17%, Mild, up]
 US 10-Year Treasury yield: 4.706% (-0.018, -1.8bps) -- little change / roughly flat [3h: -0.2bps, Flat, flat] [3d: +6.5bps, Mild, up] [30d: +17.7bps, Mild, up]
-US Dollar Index (DXY): 99.62 (-0.01, -0.01%) -- little change / roughly flat [3h: -0.00%, Flat, flat] [3d: -0.34%, Mild, down] [30d: -1.50%, Mild, down]
-Gold futures (GC=F): 4,408.00 (-40.10, -0.90%) -- money flowing out of gold -- Medium [3h: -0.24%, Mild, down] [3d: +1.02%, Medium, up] [30d: +6.34%, Medium, up]
-Bitcoin (BTC-USD): 64,637.83 (+157.83, +0.24%) -- little change / roughly flat [3h: -0.19%, Flat, flat] [3d: +2.56%, Mild, up] [30d: -0.08%, Flat, flat]
+US Dollar Index (DXY): 99.67 (+0.05, +0.05%) -- little change / roughly flat [3h: +0.03%, Flat, flat] [3d: -0.29%, Mild, down] [30d: -1.45%, Mild, down]
+Gold futures (GC=F): 4,388.50 (-59.60, -1.34%) -- money flowing out of gold -- Medium [3h: -0.56%, Medium, down] [3d: +0.57%, Mild, up] [30d: +5.87%, Medium, up]
+Bitcoin (BTC-USD): 64,559.64 (+79.64, +0.12%) -- little change / roughly flat [3h: -0.22%, Flat, flat] [3d: +2.44%, Mild, up] [30d: -0.20%, Flat, flat]
 
 In: none.
 Out: equities (medium), gold (medium).
 Flat: bonds (flat), the dollar (flat), BTC (flat).
-As of: 2026-08-18 19:54 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-08-18 20:53 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly closes, last 50h):
   -- Equity Index --
-  ES=F    E-Mini S&P 500       7,720.000 (-79.250, -1.02%)  ▆▆▆▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▆▆▆▆▅▄▅▄▄▄▄▄▄▃▂▂▂▂▁▁▁▂▂▂▁▁▁▁▁▁▁
-  YM=F    Mini Dow Jones       53,458.000 (-295.000, -0.55%)  ▆▆█▇▇▇▇▆▆▅▆▆▆▆▆▅▅▆▅▄▄▃▃▃▂▃▃▂▂▃▂▃▂▂▂▂▂▁▂▂▃▂▂▂▂▁▁▁▁▁
-  NQ=F    Nasdaq 100           29,604.500 (-454.500, -1.51%)  ▅▅▅▆▆▆▇▆▆▇▇▇▇█▇▇▇▇▇▆▇▇▇▆▅▆▅▅▅▅▅▅▄▄▄▃▄▃▂▂▂▂▂▁▁▁▁▁▁▁
-  RTY=F   E-mini Russell 2000  3,030.000 (-36.400, -1.19%)  ▆▆▆▇▇▇█▇▇▇▇▇▇▇▇▇▇▇▇▆▅▆▆▆▅▅▆▆▆▆▆▆▅▅▅▅▅▄▅▅▄▅▄▄▂▂▁▁▁▁
+  ES=F    E-Mini S&P 500       7,715.250 (-85.250, -1.09%)  ▆▆▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▆▆▆▆▅▅▅▄▄▄▄▄▄▃▂▂▂▂▁▁▁▂▂▂▁▁▁▁▁▁▁▁
+  YM=F    Mini Dow Jones       53,415.000 (-384.000, -0.71%)  ▆█▇▇▇▇▆▆▅▆▆▆▆▆▅▅▆▅▄▄▃▃▃▂▃▃▂▂▃▂▃▂▂▂▂▂▁▂▂▃▂▂▂▂▁▁▁▁▁▁
+  NQ=F    Nasdaq 100           29,580.500 (-501.000, -1.67%)  ▅▅▆▆▆▇▆▆▇▇▇▇█▇▇▇▇▇▆▇▇▇▆▅▆▅▅▅▅▅▅▄▄▄▃▄▃▂▂▂▂▂▁▁▁▁▁▁▁▁
+  RTY=F   E-mini Russell 2000  3,026.300 (-42.200, -1.38%)  ▆▆▇▇▇█▇▇▇▇▇▇▇▇▇▇▇▇▆▅▆▆▆▅▅▆▆▆▆▆▆▅▅▅▅▅▄▅▅▄▅▅▄▂▂▂▁▁▁▁
   -- Treasuries --
-  ZB=F    US Treasury Bond     108.656 (-0.188, -0.17%)  ▆▅▆▆▆▆▆▇▆▆▇▇▇██▇▆▆▆▄▅▅▄▄▃▂▂▃▂▃▂▂▂▂▁▁▂▁▁▂▁▁▂▃▃▃▄▅▅▅
-  ZN=F    10-Year T-Note       108.547 (-0.078, -0.07%)  ▆▅▅▅▅▆▆▇▆▆▆▇▆█▇▇▆▅▅▃▄▅▄▄▃▃▃▃▃▃▃▂▂▁▁▁▂▁▁▂▂▁▁▃▃▃▄▄▄▄
-  ZF=F    5-Year T-Note        106.430 (-0.047, -0.04%)  ▆▄▄▅▄▅▅▇▆▆▆▇▆█▇▆▅▅▄▃▄▆▅▄▃▃▃▃▃▃▂▂▂▁▁▁▂▁▁▂▂▁▁▃▃▃▄▄▄▄
-  ZT=F    2-Year T-Note        103.055 (+0.000, +0.00%)  ▄▄▄▄▅▆▆▆▆▆▇▆█▆▆▆▆▅▃▅▆▅▅▃▃▂▃▃▃▄▂▂▂▁▁▁▂▁▁▂▂▁▁▃▃▄▄▄▄▄
+  ZB=F    US Treasury Bond     108.688 (-0.125, -0.11%)  ▅▆▆▆▆▆▇▆▆▇▇▇██▇▆▆▆▄▅▅▄▄▃▂▂▃▂▃▂▂▂▂▁▁▂▁▁▂▁▁▂▃▃▃▄▅▅▄▅
+  ZN=F    10-Year T-Note       108.531 (-0.047, -0.04%)  ▅▅▅▅▆▆▇▆▆▆▇▆█▇▇▆▅▅▃▄▅▄▄▃▃▃▃▃▃▃▂▂▁▁▁▂▁▁▂▂▁▁▃▃▃▄▄▄▄▄
+  ZF=F    5-Year T-Note        106.422 (-0.008, -0.01%)  ▄▄▅▄▅▅▇▆▆▆▇▆█▇▆▅▅▄▃▄▆▅▄▃▃▃▃▃▃▂▂▂▁▁▁▂▁▁▂▂▁▁▃▃▃▄▄▄▄▄
+  ZT=F    2-Year T-Note        103.047 (-0.012, -0.01%)  ▄▄▄▅▆▆▆▆▆▇▆█▆▆▆▆▅▃▅▆▅▅▃▃▂▃▃▃▄▂▂▂▁▁▁▂▁▁▂▂▁▁▃▃▄▄▄▄▄▃
   -- Metals --
-  GC=F    Gold                 4,408.000 (-27.500, -0.62%)  ▃▂▂▃▃▃▂▅▄▄▄▄▄▅▅▄▄▅▄▃▅▆▇▇▆▅▆▆▆▇█▅▅▄▄▄▄▄▄▄▄▄▄▄▂▂▁▁▁▁
-  MGC=F   Micro Gold           4,407.900 (-34.800, -0.78%)  ▃▃▂▂▃▃▂▅▄▄▄▄▄▅▅▄▄▄▄▃▅▆▇▇▆▅▆▆▆▇█▅▅▄▄▄▄▄▄▄▄▄▄▄▂▂▁▁▁▁
-  SI=F    Silver               63.830 (-1.300, -2.00%)  ▄▃▃▃▄▄▃▅▆▅▅▅▆▆▆▅▅▅▅▄▆▇█▇▆▆▆▆▅▆▇▅▅▄▄▄▄▄▄▄▄▄▄▃▂▁▁▁▁▁
-  SIL=F   Micro Silver         63.825 (-1.305, -2.00%)  ▄▃▃▃▄▄▃▅▆▅▅▅▆▆▆▅▅▅▅▄▆▇█▇▆▆▆▆▅▆▇▅▅▄▄▄▄▄▄▄▄▄▄▃▂▁▁▁▁▁
-  PL=F    Platinum             1,724.300 (-35.000, -1.99%)  ▄▄▄▄▄▅▄▅▅▄▄▄▅▆▆▅▄▅▅▆▆▇▇▇▇▇▇▆▆▇█▆▅▄▄▄▅▄▃▄▄▄▅▄▂▁▁▁▁▁
-  PA=F    Palladium            1,291.000 (-33.500, -2.53%)  ▅▅▅▅▅▆▅▆▆▆▆▆▇▇█▆▆▆▆▆▆▆▆▇▆▆▆▆▆▆▇▅▅▅▅▅▆▅▄▅▅▅▄▂▂▁▁▁▁▁
-  HG=F    Copper               6.471 (-0.142, -2.15%)  ▄▄▄▄▄▅▅▅▇▇▇▇█▇▆▆▆▆▆▅▄▅▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▂▂▃▃▃▂▁▁▁▁▁▁
+  GC=F    Gold                 4,388.500 (-41.800, -0.94%)  ▃▃▃▄▄▃▅▅▅▅▄▅▅▅▅▅▅▅▄▆▆▇▇▆▆▆▆▆▇█▆▅▅▅▅▅▅▅▅▅▅▅▅▃▃▃▂▂▁▁
+  MGC=F   Micro Gold           4,388.500 (-47.200, -1.06%)  ▄▃▃▄▄▃▅▅▅▅▄▅▅▅▅▅▅▅▄▆▆▇▇▆▆▆▆▆▇█▆▅▅▅▅▅▅▅▅▅▅▅▅▃▃▃▂▂▁▁
+  SI=F    Silver               63.540 (-1.445, -2.22%)  ▄▄▄▄▅▄▅▆▆▅▅▆▆▆▅▅▅▆▅▆▇█▇▆▆▆▆▆▆▇▆▅▅▄▄▅▄▄▄▄▄▄▄▂▂▁▁▁▁▁
+  SIL=F   Micro Silver         63.535 (-1.450, -2.23%)  ▄▄▄▄▅▄▅▆▆▅▅▆▆▆▅▅▆▆▅▆▇█▇▆▆▆▆▆▆▇▆▅▅▄▄▅▄▄▄▄▄▄▄▂▂▁▁▁▁▁
+  PL=F    Platinum             1,721.000 (-34.600, -1.97%)  ▄▄▄▄▅▄▅▅▅▄▄▅▆▆▅▄▅▅▆▆▇▇▇▇▇▇▆▆▇█▆▅▅▄▅▅▄▃▄▄▄▅▄▂▂▂▁▁▁▁
+  PA=F    Palladium            1,288.000 (-32.500, -2.46%)  ▅▅▅▅▆▅▆▆▇▆▆▇▇█▆▆▆▆▆▆▇▇▇▆▆▆▆▆▆▇▅▅▅▅▅▆▅▄▅▅▆▅▂▂▁▁▁▁▁▁
+  HG=F    Copper               6.458 (-0.143, -2.17%)  ▄▄▄▄▅▅▅▇▇▇▇█▇▆▆▆▇▆▅▄▅▄▅▄▄▄▄▄▄▄▄▃▃▃▄▄▃▂▃▃▃▃▃▁▂▁▁▁▁▁
   -- Energy --
-  CL=F    Crude Oil            84.060 (+2.140, +2.61%)  ▁▁▂▂▂▂▁▁▂▂▁▁▁▁▁▂▃▃▂▃▂▁▂▃▇▅▆▇▇▇▆▇▇█▇▇▇▆▅▅▅▅▆▆▆▆▅▅▅▅
-  HO=F    Heating Oil          4.327 (+0.193, +4.66%)  ▁▁▁▁▂▂▂▁▂▂▁▁▁▁▂▂▃▃▃▄▄▅▄▅▇▇▇▇▇▇▇▇▇▇▇▇▇▆▆▆▆▆▇▆▇▇▇▇▇█
-  NG=F    Natural Gas          2.784 (+0.028, +1.02%)  ▆▆▅▄▅▂▂▂▁▁▂▂▁▁▁▁▁▁▁▂▃▂▃▃▃▃▃▄▃▃▃▄▃▃▄▄▄▄▄▃▃▄▃▄▅▅▆▆▇█
-  RB=F    RBOB Gasoline        3.012 (+0.112, +3.88%)  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▁▂▁▂▂▃▅▅▅▅▆▅▅▆▆▆▆▆▆▅▅▅▅▆▇▆▆█▇▇▇▇
-  BZ=F    Brent Crude Oil      90.940 (+2.950, +3.35%)  ▁▁▂▂▂▂▂▁▂▂▂▂▁▁▂▃▃▃▂▃▂▂▃▃▆▅▆▆▇▇▆▆▇▇▇▇▇▇▆▆▆▆▇▇▇█▇▆▆▆
+  CL=F    Crude Oil            84.340 (+2.050, +2.49%)  ▁▂▂▂▂▁▁▂▂▁▁▁▁▁▂▃▃▂▃▂▁▂▃▇▅▆▇▇▇▆▇▇█▇▇▇▆▅▅▅▅▆▆▆▆▅▅▅▅▆
+  HO=F    Heating Oil          4.344 (+0.201, +4.85%)  ▁▁▁▁▁▂▁▂▁▁▁▁▁▁▁▃▃▂▃▄▅▄▄▆▆▆▆▇▆▆▆▆▇▇▆▇▆▅▅▅▆▆▆▆▇▆▇▇▇█
+  NG=F    Natural Gas          2.791 (+0.047, +1.71%)  ▅▄▄▅▂▂▂▁▁▂▁▁▁▁▁▁▁▁▂▃▂▃▃▃▃▃▃▃▃▃▄▃▃▃▄▄▃▄▃▃▄▃▄▅▅▆▆▇▇█
+  RB=F    RBOB Gasoline        3.012 (+0.119, +4.12%)  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▁▂▁▂▂▃▅▅▅▅▆▅▅▆▆▆▆▆▆▅▅▅▅▆▇▆▆█▇▇▇▇▇
+  BZ=F    Brent Crude Oil      91.170 (+2.790, +3.16%)  ▁▁▁▁▁▁▁▂▂▁▁▁▁▁▂▃▃▂▃▂▁▂▃▆▅▆▆▇▆▆▆▇▇▇▇▇▇▆▆▆▆▇▇▇█▇▆▆▆▇
   B0=F    Mont Belvieu Propane DATA UNAVAILABLE
   -- Agriculture --
   ZC=F    Corn                 487.750 (+10.250, +2.15%)  ▁▁▁▁▁▁▂▂▂▃▂▄▄▄▄▄▄▄▄▄▄▅▄▄▄▄▅▆▆▆▆▆▇▇▇▇▇▇▇█▇▇▇▇▇▆▆▆▆▅
@@ -57,4 +57,4 @@ Futures watchlist (hourly closes, last 50h):
   OJ=F    Orange Juice         149.500 (+5.750, +4.00%)  ▃▁▃▁▂▁▂▂▁▁▁▁▁▁▁▁▁▂▂▁▂▃▃▃▃▃▁▂▄▆▅▄▅▇█▆
   SB=F    Sugar                17.480 (+0.740, +4.42%)  ▃▃▃▄▅▄▄▃▃▁▁▁▁▁▂▂▂▂▃▃▃▃▃▃▂▂▂▂▂▂▂▄▄▃▃▂▃▃▄▄▅▅▆▇▇▆▆▇▇█
 
-Over the last 3 hours, money across the futures board is flowing into Livestock, Softs; flowing out of Metals, Agriculture; roughly flat in Treasuries; mixed (no consistent direction) in Equity Index, Energy. Biggest 3h mover: Sugar (SB=F) +1.51%, Heavy.
+Over the last 3 hours, money across the futures board is flowing into Energy, Livestock, Softs; flowing out of Metals, Agriculture; roughly flat in Equity Index, Treasuries. Biggest 3h mover: Sugar (SB=F) +1.51%, Heavy.
