@@ -150,10 +150,18 @@ def fetch_hourly_ohlc(ticker, hours=HOURLY_CANDLE_HOURS, period="90d"):
         if hist.empty:
             return None
         tail = hist if hours is None else hist.tail(hours)
-        return [
-            {"open": float(r.Open), "high": float(r.High), "low": float(r.Low), "close": float(r.Close)}
-            for r in tail.itertuples()
-        ]
+        out = []
+        for r in tail.itertuples():
+            ts = r.Index
+            try:
+                ts = ts.tz_convert("UTC") if ts.tzinfo is not None else ts.tz_localize("UTC")
+            except Exception:
+                pass
+            out.append({
+                "open": float(r.Open), "high": float(r.High), "low": float(r.Low), "close": float(r.Close),
+                "ts": ts,
+            })
+        return out
     except Exception as e:
         print(f"  [warn] hourly OHLC fetch failed for {ticker}: {e}", file=sys.stderr)
         return None
@@ -650,16 +658,25 @@ def render_bar(direction_flow, mag):
     )
 
 
-def render_candlestick_svg(ohlc, width=680, height=110):
+def render_candlestick_svg(ohlc, width=680, height=110, show_x_axis=False, n_ticks=6):
     """Inline SVG hourly candlestick chart from a list of {open,high,low,close}
     dicts (oldest -> newest, as returned by fetch_hourly_ohlc). Each bar is
     colored by that bar's own close vs. open (up == div-in, down == div-out),
     matching the in/out color language used elsewhere on the row. The SVG has
     no fixed pixel size baked in beyond its viewBox -- it's stretched to the
-    row's full width by CSS (see .candle-chart svg)."""
+    row's full width by CSS (see .candle-chart svg).
+
+    If `show_x_axis` is True, draws a thin axis under the candles with date/
+    time tick labels pulled from each bar's "ts" field (added by
+    fetch_hourly_ohlc), spaced out to ~n_ticks evenly across the window. The
+    returned SVG's viewBox grows by AXIS_H to fit the extra row -- callers
+    that turn this on must also give the wrapping element that much more
+    height (see .candle-chart.with-axis svg in CSS)."""
+    AXIS_H = 22
     n = len(ohlc)
+    total_height = height + (AXIS_H if show_x_axis else 0)
     if n == 0:
-        return f'<svg viewBox="0 0 {width} {height}"></svg>'
+        return f'<svg viewBox="0 0 {width} {total_height}"></svg>'
     highs = [c["high"] for c in ohlc]
     lows = [c["low"] for c in ohlc]
     lo, hi = min(lows), max(highs)
@@ -676,9 +693,12 @@ def render_candlestick_svg(ohlc, width=680, height=110):
     body_w = max(0.4, bar_w * 0.7)
     wick_w = max(0.4, bar_w * 0.18)
 
+    def x_center_of(i):
+        return i * (bar_w + gap) + bar_w / 2
+
     parts = []
     for i, c in enumerate(ohlc):
-        x_center = i * (bar_w + gap) + bar_w / 2
+        x_center = x_center_of(i)
         y_high, y_low = y(c["high"]), y(c["low"])
         y_open, y_close = y(c["open"]), y(c["close"])
         up = c["close"] >= c["open"]
@@ -693,9 +713,47 @@ def render_candlestick_svg(ohlc, width=680, height=110):
             f'<rect x="{x_center - body_w / 2:.2f}" y="{body_top:.2f}" width="{body_w:.2f}" '
             f'height="{body_h:.2f}" fill="{color}"/>'
         )
+
+    if show_x_axis:
+        parts.append(
+            f'<line x1="0" y1="{height:.2f}" x2="{width}" y2="{height:.2f}" '
+            f'stroke="var(--gridline)" stroke-width="1"/>'
+        )
+        if n == 1:
+            idxs = [0]
+        else:
+            steps = max(1, n_ticks - 1)
+            idxs = sorted(set(round(k * (n - 1) / steps) for k in range(n_ticks)))
+        last_date = None
+        for pos, idx in enumerate(idxs):
+            ts = ohlc[idx].get("ts")
+            if ts is None:
+                continue
+            x_center = x_center_of(idx)
+            anchor = "middle"
+            if idx <= bar_w:
+                anchor = "start"
+            elif idx >= n - 1 - (bar_w / (bar_w + gap)):
+                anchor = "end"
+            date_str = ts.strftime("%m/%d")
+            time_str = ts.strftime("%H:%M")
+            # Only repeat the date when it changes, to keep labels compact.
+            label = f"{date_str} {time_str}" if date_str != last_date else time_str
+            last_date = date_str
+            parts.append(
+                f'<line x1="{x_center:.2f}" y1="{height:.2f}" x2="{x_center:.2f}" y2="{height + 4:.2f}" '
+                f'stroke="var(--gridline)" stroke-width="1"/>'
+            )
+            parts.append(
+                f'<text x="{x_center:.2f}" y="{height + 14:.2f}" text-anchor="{anchor}" '
+                f'font-size="8.5" font-family="system-ui, sans-serif" '
+                f'fill="var(--text-muted)">{html.escape(label)}</text>'
+            )
+
+    aria_suffix = " with date/time axis" if show_x_axis else ""
     return (
-        f'<svg viewBox="0 0 {width} {height}" preserveAspectRatio="none" '
-        f'role="img" aria-label="Hourly candlestick chart, last {n} hours">{"".join(parts)}</svg>'
+        f'<svg viewBox="0 0 {width} {total_height}" preserveAspectRatio="none" '
+        f'role="img" aria-label="Hourly candlestick chart, last {n} hours{aria_suffix}">{"".join(parts)}</svg>'
     )
 
 
@@ -712,10 +770,10 @@ def render_row(asset, badge=False):
 
     hourly = asset.get("hourly_ohlc")
     if hourly:
-        candle_svg = render_candlestick_svg(hourly)
+        candle_svg = render_candlestick_svg(hourly, show_x_axis=True)
         candle_html = (
-            f'<div class="candle-chart">{candle_svg}</div>'
-            f'<div class="candle-caption">Hourly candles · last {len(hourly)}h</div>'
+            f'<div class="candle-chart with-axis">{candle_svg}</div>'
+            f'<div class="candle-caption">Hourly candles · last {len(hourly)}h · UTC</div>'
         )
     else:
         candle_html = '<div class="candle-chart candle-na">Hourly chart unavailable</div>'
@@ -917,6 +975,7 @@ CSS = """
   .tf-na { font-size: 10px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 5px; }
   .candle-chart { margin-top: 4px; width: 100%; line-height: 0; }
   .candle-chart svg { display: block; width: 100%; height: 110px; }
+  .candle-chart.with-axis svg { height: 132px; }
   .candle-caption { font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right; }
   .candle-chart.candle-na { line-height: normal; font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 40px 0; height: 110px; box-sizing: border-box; }
   .stack { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 20px; }
