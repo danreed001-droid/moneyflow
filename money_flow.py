@@ -31,17 +31,21 @@ except ImportError:
 
 ASSETS = [
     ("ES=F", "S&P 500 futures (ES=F)", "S&P 500 futures"),
+    ("NQ=F", "Nasdaq 100 futures (NQ=F)", "Nasdaq 100 futures"),
     ("^TNX", "US 10-Year Treasury yield", "US 10-Year Treasury yield"),
     ("DX-Y.NYB", "US Dollar Index (DXY)", "US Dollar Index"),
     ("GC=F", "Gold futures (GC=F)", "Gold futures"),
+    ("CL=F", "WTI Crude Oil futures (CL=F)", "Crude Oil futures"),
     ("BTC-USD", "Bitcoin (BTC-USD)", "Bitcoin"),
 ]
 
 # "since previous close" ladder -- used for the headline statement.
 THRESHOLDS = {
     "ES=F":     [(0.1, "Flat"), (0.3, "Mild"), (0.8, "Medium"), (float("inf"), "Heavy")],
+    "NQ=F":     [(0.15, "Flat"), (0.4, "Mild"), (1.0, "Medium"), (float("inf"), "Heavy")],
     "DX-Y.NYB": [(0.1, "Flat"), (0.2, "Mild"), (0.5, "Medium"), (float("inf"), "Heavy")],
     "GC=F":     [(0.2, "Flat"), (0.5, "Mild"), (1.5, "Medium"), (float("inf"), "Heavy")],
+    "CL=F":     [(0.3, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
     "BTC-USD":  [(0.5, "Flat"), (1.5, "Mild"), (3.0, "Medium"), (float("inf"), "Heavy")],
 }
 TNX_BPS_THRESHOLDS = [(2, "Flat"), (4, "Mild"), (8, "Medium"), (float("inf"), "Heavy")]
@@ -49,8 +53,10 @@ TNX_BPS_THRESHOLDS = [(2, "Flat"), (4, "Mild"), (8, "Medium"), (float("inf"), "H
 # ~3h ladder (15m bars, 12 back) -- tighter than the "since previous close" one.
 THRESHOLDS_3H = {
     "ES=F":     [(0.05, "Flat"), (0.15, "Mild"), (0.4, "Medium"), (float("inf"), "Heavy")],
+    "NQ=F":     [(0.08, "Flat"), (0.2, "Mild"), (0.5, "Medium"), (float("inf"), "Heavy")],
     "DX-Y.NYB": [(0.05, "Flat"), (0.12, "Mild"), (0.3, "Medium"), (float("inf"), "Heavy")],
     "GC=F":     [(0.1, "Flat"), (0.3, "Mild"), (0.8, "Medium"), (float("inf"), "Heavy")],
+    "CL=F":     [(0.15, "Flat"), (0.4, "Mild"), (1.0, "Medium"), (float("inf"), "Heavy")],
     "BTC-USD":  [(0.3, "Flat"), (0.8, "Mild"), (1.8, "Medium"), (float("inf"), "Heavy")],
 }
 TNX_BPS_THRESHOLDS_3H = [(1, "Flat"), (2.5, "Mild"), (5, "Medium"), (float("inf"), "Heavy")]
@@ -58,8 +64,10 @@ TNX_BPS_THRESHOLDS_3H = [(1, "Flat"), (2.5, "Mild"), (5, "Medium"), (float("inf"
 # 3-day ladder -- roughly 2-3x the 3h ladder above.
 THRESHOLDS_3D = {
     "ES=F":     [(0.3, "Flat"), (0.8, "Mild"), (2.0, "Medium"), (float("inf"), "Heavy")],
+    "NQ=F":     [(0.4, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
     "DX-Y.NYB": [(0.2, "Flat"), (0.5, "Mild"), (1.2, "Medium"), (float("inf"), "Heavy")],
     "GC=F":     [(0.4, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
+    "CL=F":     [(0.6, "Flat"), (1.5, "Mild"), (3.5, "Medium"), (float("inf"), "Heavy")],
     "BTC-USD":  [(1.0, "Flat"), (3.0, "Mild"), (6.0, "Medium"), (float("inf"), "Heavy")],
 }
 TNX_BPS_THRESHOLDS_3D = [(4, "Flat"), (8, "Mild"), (15, "Medium"), (float("inf"), "Heavy")]
@@ -67,8 +75,10 @@ TNX_BPS_THRESHOLDS_3D = [(4, "Flat"), (8, "Mild"), (15, "Medium"), (float("inf")
 # 30-day ladder -- much larger cumulative moves expected.
 THRESHOLDS_30D = {
     "ES=F":     [(1.0, "Flat"), (3.0, "Mild"), (7.0, "Medium"), (float("inf"), "Heavy")],
+    "NQ=F":     [(1.5, "Flat"), (4.0, "Mild"), (9.0, "Medium"), (float("inf"), "Heavy")],
     "DX-Y.NYB": [(0.7, "Flat"), (2.0, "Mild"), (4.5, "Medium"), (float("inf"), "Heavy")],
     "GC=F":     [(1.5, "Flat"), (4.0, "Mild"), (9.0, "Medium"), (float("inf"), "Heavy")],
+    "CL=F":     [(2.0, "Flat"), (6.0, "Mild"), (12.0, "Medium"), (float("inf"), "Heavy")],
     "BTC-USD":  [(4.0, "Flat"), (10.0, "Mild"), (20.0, "Medium"), (float("inf"), "Heavy")],
 }
 TNX_BPS_THRESHOLDS_30D = [(10, "Flat"), (20, "Mild"), (40, "Medium"), (float("inf"), "Heavy")]
@@ -79,8 +89,10 @@ TNX_BPS_THRESHOLDS_30D = [(10, "Flat"), (20, "Mild"), (40, "Medium"), (float("in
 # keep this tuple in the same shape as every other asset.
 FLOW_WORDS = {
     "ES=F":     ("equities", "into", "out of"),
+    "NQ=F":     ("tech/Nasdaq equities", "into", "out of"),
     "DX-Y.NYB": ("the dollar", "into", "out of"),
     "GC=F":     ("gold", "into", "out of"),
+    "CL=F":     ("crude oil", "into", "out of"),
     "BTC-USD":  ("BTC", "into", "out of"),
     "^TNX":     ("bonds", "into", "out of"),
 }
@@ -115,6 +127,31 @@ def fetch_daily(ticker, period="90d"):
         return hist if len(hist) else None
     except Exception as e:
         print(f"  [warn] daily fetch failed for {ticker}: {e}", file=sys.stderr)
+        return None
+
+
+HOURLY_CANDLE_HOURS = 300
+
+
+def fetch_hourly_ohlc(ticker, hours=HOURLY_CANDLE_HOURS, period="90d"):
+    """Last `hours` 1h-interval OHLC bars for `ticker` (oldest -> newest), or
+    None if unavailable. period="90d" comfortably covers 300 hourly bars even
+    for assets that only trade ~6.5h/day on weekdays (e.g. ^TNX), since 90
+    calendar days is ~64 trading days * 6.5h =~ 416h of coverage."""
+    try:
+        hist = yf.Ticker(ticker).history(period=period, interval="60m")
+        if hist is None or hist.empty:
+            return None
+        hist = hist.dropna(subset=["Open", "High", "Low", "Close"])
+        if hist.empty:
+            return None
+        tail = hist.tail(hours)
+        return [
+            {"open": float(r.Open), "high": float(r.High), "low": float(r.Low), "close": float(r.Close)}
+            for r in tail.itertuples()
+        ]
+    except Exception as e:
+        print(f"  [warn] hourly OHLC fetch failed for {ticker}: {e}", file=sys.stderr)
         return None
 
 
@@ -403,6 +440,8 @@ def build_report():
             last_price = hist["Close"].iloc[-1]
             prev_close = hist["Close"].iloc[0]
 
+        hourly_ohlc = fetch_hourly_ohlc(ticker)
+
         change = last_price - prev_close
         pct = (change / prev_close) * 100 if prev_close else 0.0
 
@@ -483,6 +522,7 @@ def build_report():
             "delta_str": delta_str,
             "since_prev": {"pct": pct, "mag": mag, "flow": since_prev_flow, "statement": statement},
             "windows": windows,
+            "hourly_ohlc": hourly_ohlc,
         })
 
     report = []
@@ -616,32 +656,75 @@ def render_bar(direction_flow, mag):
     )
 
 
+def render_candlestick_svg(ohlc, width=680, height=110):
+    """Inline SVG hourly candlestick chart from a list of {open,high,low,close}
+    dicts (oldest -> newest, as returned by fetch_hourly_ohlc). Each bar is
+    colored by that bar's own close vs. open (up == div-in, down == div-out),
+    matching the in/out color language used elsewhere on the row. The SVG has
+    no fixed pixel size baked in beyond its viewBox -- it's stretched to the
+    row's full width by CSS (see .candle-chart svg)."""
+    n = len(ohlc)
+    if n == 0:
+        return f'<svg viewBox="0 0 {width} {height}"></svg>'
+    highs = [c["high"] for c in ohlc]
+    lows = [c["low"] for c in ohlc]
+    lo, hi = min(lows), max(highs)
+    span = (hi - lo) or 1.0
+    pad = 4.0
+    draw_h = height - 2 * pad
+
+    def y(val):
+        frac = (val - lo) / span
+        return pad + (1 - frac) * draw_h
+
+    gap = 1.0
+    bar_w = max(0.5, (width - gap * (n - 1)) / n)
+    body_w = max(0.4, bar_w * 0.7)
+    wick_w = max(0.4, bar_w * 0.18)
+
+    parts = []
+    for i, c in enumerate(ohlc):
+        x_center = i * (bar_w + gap) + bar_w / 2
+        y_high, y_low = y(c["high"]), y(c["low"])
+        y_open, y_close = y(c["open"]), y(c["close"])
+        up = c["close"] >= c["open"]
+        color = "var(--div-in)" if up else "var(--div-out)"
+        body_top = min(y_open, y_close)
+        body_h = max(abs(y_close - y_open), 0.8)
+        parts.append(
+            f'<line x1="{x_center:.2f}" y1="{y_high:.2f}" x2="{x_center:.2f}" y2="{y_low:.2f}" '
+            f'stroke="{color}" stroke-width="{wick_w:.2f}"/>'
+        )
+        parts.append(
+            f'<rect x="{x_center - body_w / 2:.2f}" y="{body_top:.2f}" width="{body_w:.2f}" '
+            f'height="{body_h:.2f}" fill="{color}"/>'
+        )
+    return (
+        f'<svg viewBox="0 0 {width} {height}" preserveAspectRatio="none" '
+        f'role="img" aria-label="Hourly candlestick chart, last {n} hours">{"".join(parts)}</svg>'
+    )
+
+
 def render_row(asset, badge=False):
     esc = html.escape
     name = esc(asset["short_name"])
     ticker = esc(asset["ticker"]) if asset["ticker"] != "^TNX" else ""
     badge_html = '<span class="badge">★ Biggest mover</span>' if badge else ""
 
-    tf_cols = []
     flows_for_sentence = {}
     for tf in TF_ORDER:
         m = asset["windows"].get(tf)
-        col_label = TF_COL_LABELS[tf]
-        if m:
-            flows_for_sentence[tf] = m["flow"]
-            bar_html = render_bar(m["flow"], m["mag"])
-            caption = f'{esc(m["val_str"])} · {esc(m["mag"])}'
-            tf_cols.append(
-                f'<div class="tf-col"><div class="tf-label">{col_label}</div>{bar_html}'
-                f'<div class="tf-caption">{caption}</div></div>'
-            )
-        else:
-            flows_for_sentence[tf] = None
-            bar_html = render_bar("flat", "Flat")
-            tf_cols.append(
-                f'<div class="tf-col"><div class="tf-label">{col_label}</div>{bar_html}'
-                f'<div class="tf-na">n/a</div></div>'
-            )
+        flows_for_sentence[tf] = m["flow"] if m else None
+
+    hourly = asset.get("hourly_ohlc")
+    if hourly:
+        candle_svg = render_candlestick_svg(hourly)
+        candle_html = (
+            f'<div class="candle-chart">{candle_svg}</div>'
+            f'<div class="candle-caption">Hourly candles · last {len(hourly)}h</div>'
+        )
+    else:
+        candle_html = '<div class="candle-chart candle-na">Hourly chart unavailable</div>'
 
     sentence = esc(describe_flow_across_windows(flows_for_sentence))
     dot_class = "flat"  # neutral dot; the sentence itself carries the direction detail
@@ -660,9 +743,7 @@ def render_row(asset, badge=False):
             <span class="price-delta">{esc(asset["delta_str"])}</span>
           </div>
         </div>
-        <div class="timeframe-bars">
-{"".join(tf_cols)}
-        </div>
+        {candle_html}
         <div class="row-bottom">
           <span class="flow-tag"><span class="dot {dot_class}"></span>{sentence}</span>
         </div>
@@ -837,6 +918,10 @@ CSS = """
   .tf-flat-dot { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: var(--baseline); transform: translate(-50%, -50%); }
   .tf-caption { font-size: 10px; color: var(--text-secondary); margin-top: 5px; text-align: center; }
   .tf-na { font-size: 10px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 5px; }
+  .candle-chart { margin-top: 4px; width: 100%; line-height: 0; }
+  .candle-chart svg { display: block; width: 100%; height: 110px; }
+  .candle-caption { font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right; }
+  .candle-chart.candle-na { line-height: normal; font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 40px 0; height: 110px; box-sizing: border-box; }
   .stack { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 20px; }
   .fut-rows { margin-top: 8px; }
   .fut-category { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 2px; }
