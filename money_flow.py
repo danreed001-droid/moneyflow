@@ -134,10 +134,14 @@ HOURLY_CANDLE_HOURS = 300
 
 
 def fetch_hourly_ohlc(ticker, hours=HOURLY_CANDLE_HOURS, period="90d"):
-    """Last `hours` 1h-interval OHLC bars for `ticker` (oldest -> newest), or
-    None if unavailable. period="90d" comfortably covers 300 hourly bars even
-    for assets that only trade ~6.5h/day on weekdays (e.g. ^TNX), since 90
-    calendar days is ~64 trading days * 6.5h =~ 416h of coverage."""
+    """1h-interval OHLC bars for `ticker` (oldest -> newest), or None if
+    unavailable. If `hours` is an int, returns only the last `hours` bars
+    (period="90d" comfortably covers 300 hourly bars even for assets that
+    only trade ~6.5h/day on weekdays, e.g. ^TNX, since 90 calendar days is
+    ~64 trading days * 6.5h =~ 416h of coverage). If `hours` is None, returns
+    every hourly bar Yahoo has within `period` with no additional cap -- used
+    for "last N calendar days" windows where the bar count legitimately
+    varies by instrument (a 24h/day future vs. a 6.5h/day equity session)."""
     try:
         hist = yf.Ticker(ticker).history(period=period, interval="60m")
         if hist is None or hist.empty:
@@ -145,7 +149,7 @@ def fetch_hourly_ohlc(ticker, hours=HOURLY_CANDLE_HOURS, period="90d"):
         hist = hist.dropna(subset=["Open", "High", "Low", "Close"])
         if hist.empty:
             return None
-        tail = hist.tail(hours)
+        tail = hist if hours is None else hist.tail(hours)
         return [
             {"open": float(r.Open), "high": float(r.High), "low": float(r.Low), "close": float(r.Close)}
             for r in tail.itertuples()
@@ -211,7 +215,11 @@ FUTURES = [
 
 FUTURES_CATEGORY_ORDER = ["Equity Index", "Treasuries", "Metals", "Energy", "Agriculture", "Livestock", "Softs"]
 
-FUTURES_WINDOW_HOURS = 50
+# Calendar-day lookback for the futures watchlist candlestick charts. Actual
+# hourly bar count per symbol varies with its trading calendar -- CME futures
+# trade ~23h/day, 5 days/week (roughly 450-500 hourly bars in 30 days), while
+# an underlying that only has RTH data would show fewer.
+FUTURES_WINDOW_DAYS = 30
 
 # Generic magnitude ladder for the 3h flow blurb -- one ladder across every
 # futures symbol (unlike the per-asset-tuned ladders above) since we're
@@ -219,21 +227,6 @@ FUTURES_WINDOW_HOURS = 50
 FUTURES_3H_LADDER = [(0.1, "Flat"), (0.3, "Mild"), (0.8, "Medium"), (float("inf"), "Heavy")]
 
 SPARK_BLOCKS = "▁▂▃▄▅▆▇█"  # ▁..█
-
-
-def fetch_hourly_window(ticker, hours=FUTURES_WINDOW_HOURS, period="7d"):
-    """Last `hours` 1h-interval closes for `ticker`, or None if unavailable.
-    period="7d" comfortably covers 50 hourly bars even across a weekend gap,
-    since CME futures trade nearly 23h/day Sun evening - Fri evening ET."""
-    try:
-        hist = yf.Ticker(ticker).history(period=period, interval="60m")
-        if hist is None or hist.empty:
-            return None
-        closes = hist["Close"].dropna()
-        return closes.tail(hours) if len(closes) else None
-    except Exception as e:
-        print(f"  [warn] hourly fetch failed for {ticker}: {e}", file=sys.stderr)
-        return None
 
 
 def compute_futures_3h_flow(closes):
@@ -253,17 +246,17 @@ def compute_futures_3h_flow(closes):
     return {"pct": pct, "mag": mag, "flow": flow}
 
 
-def build_futures(hours=FUTURES_WINDOW_HOURS):
-    """Returns a list of dicts, one per FUTURES entry, each carrying the last
-    `hours` hourly closes, the price/change over that window, and a 3h
-    money-flow read used for the blurb."""
+def build_futures(days=FUTURES_WINDOW_DAYS):
+    """Returns a list of dicts, one per FUTURES entry, each carrying the full
+    hourly OHLC history over the last `days` calendar days, the price/change
+    across that window, and a 3h money-flow read used for the blurb."""
     out = []
     for ticker, name, category in FUTURES:
-        closes = fetch_hourly_window(ticker, hours=hours)
-        if closes is None or len(closes) < 2:
+        ohlc = fetch_hourly_ohlc(ticker, hours=None, period=f"{days}d")
+        if ohlc is None or len(ohlc) < 2:
             out.append({"ticker": ticker, "name": name, "category": category, "unavailable": True})
             continue
-        closes_list = [float(c) for c in closes]
+        closes_list = [c["close"] for c in ohlc]
         last = closes_list[-1]
         first = closes_list[0]
         change = last - first
@@ -277,6 +270,7 @@ def build_futures(hours=FUTURES_WINDOW_HOURS):
             "change": change,
             "pct": pct,
             "closes": closes_list,
+            "ohlc": ohlc,
             "hours_covered": len(closes_list),
             "flow_3h": compute_futures_3h_flow(closes_list),
         })
@@ -349,9 +343,9 @@ def text_sparkline(values):
     return "".join(SPARK_BLOCKS[min(n, int((v - lo) / span * n))] for v in values)
 
 
-def render_futures_text(futures, hours=FUTURES_WINDOW_HOURS):
+def render_futures_text(futures, days=FUTURES_WINDOW_DAYS):
     """Plain-text lines for the Futures watchlist section of latest.txt."""
-    lines = [f"Futures watchlist (hourly closes, last {hours}h):"]
+    lines = [f"Futures watchlist (hourly OHLC, last {days} days -- bar count varies by symbol's trading calendar):"]
     current_cat = None
     for f in futures:
         if f["category"] != current_cat:
@@ -363,7 +357,7 @@ def render_futures_text(futures, hours=FUTURES_WINDOW_HOURS):
         spark = text_sparkline(f["closes"])
         lines.append(
             f"  {f['ticker']:<7} {f['name']:<20} {f['last']:,.3f} "
-            f"({f['change']:+,.3f}, {f['pct']:+.2f}%)  {spark}"
+            f"({f['change']:+,.3f}, {f['pct']:+.2f}%)  [{f['hours_covered']}h]  {spark}"
         )
     lines.append("")
     lines.append(build_futures_blurb(futures))
@@ -795,28 +789,31 @@ def render_futures_row(f):
     if f["unavailable"]:
         return (
             f'      <div class="fut-row">'
-            f'<div class="fut-id"><span class="fut-ticker">{esc(f["ticker"])}</span>'
+            f'<div class="fut-top"><div class="fut-id"><span class="fut-ticker">{esc(f["ticker"])}</span>'
             f'<span class="fut-name">{esc(f["name"])}</span></div>'
-            f'<div class="fut-na">data unavailable</div></div>\n'
+            f'<div class="fut-na">data unavailable</div></div></div>\n'
         )
     delta_class = "in" if f["change"] >= 0 else "out"
     arrow = "▲" if f["change"] >= 0 else "▼"
-    chart_svg = render_futures_bars_svg(f["closes"])
+    chart_svg = render_candlestick_svg(f["ohlc"], width=680, height=60)
     return f'''      <div class="fut-row">
-        <div class="fut-id">
-          <span class="fut-ticker">{esc(f["ticker"])}</span>
-          <span class="fut-name">{esc(f["name"])}</span>
-        </div>
-        <div class="fut-price">
-          <span class="fut-last">{f["last"]:,.3f}</span>
-          <span class="fut-delta {delta_class}">{arrow} {f["change"]:+,.3f} ({f["pct"]:+.2f}%)</span>
+        <div class="fut-top">
+          <div class="fut-id">
+            <span class="fut-ticker">{esc(f["ticker"])}</span>
+            <span class="fut-name">{esc(f["name"])}</span>
+          </div>
+          <div class="fut-price">
+            <span class="fut-last">{f["last"]:,.3f}</span>
+            <span class="fut-delta {delta_class}">{arrow} {f["change"]:+,.3f} ({f["pct"]:+.2f}%)</span>
+          </div>
         </div>
         <div class="fut-chart">{chart_svg}</div>
+        <div class="fut-chart-caption">Hourly candles · last {f["hours_covered"]}h ({FUTURES_WINDOW_DAYS}d)</div>
       </div>
 '''
 
 
-def render_futures_card(futures, hours=FUTURES_WINDOW_HOURS):
+def render_futures_card(futures, days=FUTURES_WINDOW_DAYS):
     esc = html.escape
     body = []
     current_cat = None
@@ -832,7 +829,7 @@ def render_futures_card(futures, hours=FUTURES_WINDOW_HOURS):
     <div class="card-head">
       <div>
         <h1>Futures watchlist</h1>
-        <p class="subtitle">Full board snapshot — hourly closes over the last {hours} hours per symbol, across equity index, treasuries, metals, energy, agriculture, livestock and softs.</p>
+        <p class="subtitle">Full board snapshot — hourly candlesticks over the last {days} days per symbol (bar count varies by trading calendar), across equity index, treasuries, metals, energy, agriculture, livestock and softs.</p>
       </div>
     </div>
     <div class="fut-rows">
@@ -926,8 +923,9 @@ CSS = """
   .fut-rows { margin-top: 8px; }
   .fut-category { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 2px; }
   .fut-category:first-child { margin-top: 4px; }
-  .fut-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--gridline); }
+  .fut-row { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 12px 0; border-top: 1px solid var(--gridline); }
   .fut-row:first-child { border-top: none; }
+  .fut-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
   .fut-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
   .fut-ticker { font-size: 13px; font-weight: 600; color: var(--text-primary); }
   .fut-name { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -935,7 +933,9 @@ CSS = """
   .fut-last { font-size: 13px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
   .fut-delta { font-size: 11px; font-variant-numeric: tabular-nums; }
   .fut-delta.in { color: var(--div-in); } .fut-delta.out { color: var(--div-out); }
-  .fut-chart { flex: none; width: 150px; height: 32px; }
+  .fut-chart { width: 100%; line-height: 0; margin-top: 2px; }
+  .fut-chart svg { display: block; width: 100%; height: 60px; }
+  .fut-chart-caption { font-size: 9.5px; color: var(--text-muted); text-align: right; }
   .fut-na { flex: none; font-size: 11px; color: var(--text-muted); font-style: italic; }
 """
 
