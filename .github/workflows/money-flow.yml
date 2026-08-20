@@ -33,5 +33,23 @@ jobs:
           git config user.name "money-flow-bot"
           git config user.email "actions@github.com"
           git add latest.txt index.html
-          git diff --staged --quiet || git commit -m "Update snapshot $(date -u +%FT%TZ)"
-          git push
+          if git diff --staged --quiet; then
+            echo "Nothing changed, skipping commit."
+            exit 0
+          fi
+          git commit -m "Update snapshot $(date -u +%FT%TZ)"
+          # Retry with rebase in case another run (or a manual dispatch that
+          # overlaps the hourly schedule) pushed in between our checkout and
+          # this push -- otherwise a plain rejected push here silently drops
+          # this run's index.html/latest.txt update.
+          n=0
+          until git push; do
+            n=$((n + 1))
+            if [ "$n" -ge 5 ]; then
+              echo "Giving up after $n failed push attempts." >&2
+              exit 1
+            fi
+            echo "Push rejected, pulling --rebase and retrying ($n/5)..."
+            sleep $((RANDOM % 10 + 1))
+            git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)"
+          done
