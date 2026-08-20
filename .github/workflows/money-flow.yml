@@ -2,11 +2,9 @@ name: Money Flow Snapshot
 
 on:
   schedule:
-    - cron: '0 11 * * 1-5'
-    - cron: '35 13 * * 1-5'
-    - cron: '30 16 * * 1-5'
-    - cron: '10 19 * * 1-5'
-    - cron: '55 19 * * 1-5'
+    # Every hour, every day (BTC-USD and the futures book trade nearly around
+    # the clock, so this isn't restricted to US weekday market hours).
+    - cron: '0 * * * *'
   workflow_dispatch: {}
 
 permissions:
