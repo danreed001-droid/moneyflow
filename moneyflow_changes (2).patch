@@ -1,0 +1,316 @@
+diff --git a/money_flow.py b/money_flow.py
+index e02127e..74ce849 100644
+--- a/money_flow.py
++++ b/money_flow.py
+@@ -32,7 +32,7 @@ except ImportError:
+ ASSETS = [
+     ("ES=F", "S&P 500 futures (ES=F)", "S&P 500 futures"),
+     ("NQ=F", "Nasdaq 100 futures (NQ=F)", "Nasdaq 100 futures"),
+-    ("^TNX", "US 10-Year Treasury yield", "US 10-Year Treasury yield"),
++    ("ZN=F", "10-Year T-Note futures (ZN=F)", "10-Year T-Note futures"),
+     ("DX-Y.NYB", "US Dollar Index (DXY)", "US Dollar Index"),
+     ("GC=F", "Gold futures (GC=F)", "Gold futures"),
+     ("CL=F", "WTI Crude Oil futures (CL=F)", "Crude Oil futures"),
+@@ -47,8 +47,8 @@ THRESHOLDS = {
+     "GC=F":     [(0.2, "Flat"), (0.5, "Mild"), (1.5, "Medium"), (float("inf"), "Heavy")],
+     "CL=F":     [(0.3, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
+     "BTC-USD":  [(0.5, "Flat"), (1.5, "Mild"), (3.0, "Medium"), (float("inf"), "Heavy")],
++    "ZN=F":     [(0.1, "Flat"), (0.25, "Mild"), (0.6, "Medium"), (float("inf"), "Heavy")],
+ }
+-TNX_BPS_THRESHOLDS = [(2, "Flat"), (4, "Mild"), (8, "Medium"), (float("inf"), "Heavy")]
+ 
+ # ~3h ladder (15m bars, 12 back) -- tighter than the "since previous close" one.
+ THRESHOLDS_3H = {
+@@ -58,8 +58,8 @@ THRESHOLDS_3H = {
+     "GC=F":     [(0.1, "Flat"), (0.3, "Mild"), (0.8, "Medium"), (float("inf"), "Heavy")],
+     "CL=F":     [(0.15, "Flat"), (0.4, "Mild"), (1.0, "Medium"), (float("inf"), "Heavy")],
+     "BTC-USD":  [(0.3, "Flat"), (0.8, "Mild"), (1.8, "Medium"), (float("inf"), "Heavy")],
++    "ZN=F":     [(0.05, "Flat"), (0.12, "Mild"), (0.3, "Medium"), (float("inf"), "Heavy")],
+ }
+-TNX_BPS_THRESHOLDS_3H = [(1, "Flat"), (2.5, "Mild"), (5, "Medium"), (float("inf"), "Heavy")]
+ 
+ # 3-day ladder -- roughly 2-3x the 3h ladder above.
+ THRESHOLDS_3D = {
+@@ -69,8 +69,8 @@ THRESHOLDS_3D = {
+     "GC=F":     [(0.4, "Flat"), (1.0, "Mild"), (2.5, "Medium"), (float("inf"), "Heavy")],
+     "CL=F":     [(0.6, "Flat"), (1.5, "Mild"), (3.5, "Medium"), (float("inf"), "Heavy")],
+     "BTC-USD":  [(1.0, "Flat"), (3.0, "Mild"), (6.0, "Medium"), (float("inf"), "Heavy")],
++    "ZN=F":     [(0.2, "Flat"), (0.5, "Mild"), (1.0, "Medium"), (float("inf"), "Heavy")],
+ }
+-TNX_BPS_THRESHOLDS_3D = [(4, "Flat"), (8, "Mild"), (15, "Medium"), (float("inf"), "Heavy")]
+ 
+ # 30-day ladder -- much larger cumulative moves expected.
+ THRESHOLDS_30D = {
+@@ -80,13 +80,14 @@ THRESHOLDS_30D = {
+     "GC=F":     [(1.5, "Flat"), (4.0, "Mild"), (9.0, "Medium"), (float("inf"), "Heavy")],
+     "CL=F":     [(2.0, "Flat"), (6.0, "Mild"), (12.0, "Medium"), (float("inf"), "Heavy")],
+     "BTC-USD":  [(4.0, "Flat"), (10.0, "Mild"), (20.0, "Medium"), (float("inf"), "Heavy")],
++    "ZN=F":     [(0.7, "Flat"), (1.5, "Mild"), (3.0, "Medium"), (float("inf"), "Heavy")],
+ }
+-TNX_BPS_THRESHOLDS_30D = [(10, "Flat"), (20, "Mild"), (40, "Medium"), (float("inf"), "Heavy")]
+ 
+ # (flow target name, word when money flows IN, word when money flows OUT).
+-# ^TNX's inversion (yield UP -> bond price DOWN -> OUT of bonds) is handled
+-# entirely in the change>0/change<0 branches in build_report(), not here --
+-# keep this tuple in the same shape as every other asset.
++# Every asset here -- including ZN=F -- is a priced instrument, so price up
++# always means money flowing IN and price down always means money flowing
++# OUT; no direction inversion needed (that was only true for the old ^TNX
++# yield entry, which this replaced).
+ FLOW_WORDS = {
+     "ES=F":     ("equities", "into", "out of"),
+     "NQ=F":     ("tech/Nasdaq equities", "into", "out of"),
+@@ -94,7 +95,7 @@ FLOW_WORDS = {
+     "GC=F":     ("gold", "into", "out of"),
+     "CL=F":     ("crude oil", "into", "out of"),
+     "BTC-USD":  ("BTC", "into", "out of"),
+-    "^TNX":     ("bonds", "into", "out of"),
++    "ZN=F":     ("Treasury notes", "into", "out of"),
+ }
+ 
+ TF_ORDER = ["3h", "3d", "30d"]
+@@ -137,7 +138,7 @@ def fetch_hourly_ohlc(ticker, hours=HOURLY_CANDLE_HOURS, period="90d"):
+     """1h-interval OHLC bars for `ticker` (oldest -> newest), or None if
+     unavailable. If `hours` is an int, returns only the last `hours` bars
+     (period="90d" comfortably covers 300 hourly bars even for assets that
+-    only trade ~6.5h/day on weekdays, e.g. ^TNX, since 90 calendar days is
++    only trade ~6.5h/day on weekdays, since 90 calendar days is
+     ~64 trading days * 6.5h =~ 416h of coverage). If `hours` is None, returns
+     every hourly bar Yahoo has within `period` with no additional cap -- used
+     for "last N calendar days" windows where the bar count legitimately
+@@ -280,11 +281,22 @@ def build_futures(days=FUTURES_WINDOW_DAYS):
+             "closes": closes_list,
+             "ohlc": ohlc,
+             "hours_covered": len(closes_list),
++            "last_ts": ohlc[-1].get("ts"),
+             "flow_3h": compute_futures_3h_flow(closes_list),
+         })
+     return out
+ 
+ 
++def futures_freshness(futures):
++    """Most recent hourly-bar timestamp across every available futures
++    symbol, or None if nothing came back with a usable timestamp. Surfaced
++    on the Futures watchlist card so staleness (e.g. a stuck/failed hourly
++    workflow run) is visible on the page itself instead of only in git
++    history."""
++    stamps = [f["last_ts"] for f in futures if not f.get("unavailable") and f.get("last_ts") is not None]
++    return max(stamps) if stamps else None
++
++
+ def build_futures_blurb(futures):
+     """Plain-English summary of where money is flowing across the futures
+     board over the last ~3 hours, aggregated by category (Equity Index,
+@@ -373,43 +385,29 @@ def render_futures_text(futures, days=FUTURES_WINDOW_DAYS):
+ 
+ 
+ def flow_direction(ticker, raw_direction):
+-    """Map a raw up/down/flat price/yield direction to in/out/flat money-flow
+-    language, applying the bond inversion for ^TNX."""
++    """Map a raw up/down/flat price direction to in/out/flat money-flow
++    language. Every current asset is a priced instrument (price up == money
++    flowing in), so this is a straight passthrough -- kept as a function
++    since a future yield-based asset would need a direction inversion here."""
+     if raw_direction == "flat":
+         return "flat"
+-    if ticker == "^TNX":
+-        return "out" if raw_direction == "up" else "in"
+     return "in" if raw_direction == "up" else "out"
+ 
+ 
+-def compute_window_metric(ticker, c_now, c_then, pct_ladder, bps_ladder):
++def compute_window_metric(ticker, c_now, c_then, pct_ladder):
+     """Return a dict {val_str, mag, direction, flow} for one timeframe, or
+     None if c_now/c_then aren't usable."""
+-    if c_now is None or c_then is None:
++    if c_now is None or c_then is None or not c_then:
+         return None
+-    if ticker == "^TNX":
+-        change = c_now - c_then
+-        bps = change * 100
+-        mag = magnitude(abs(bps), bps_ladder)
+-        direction = "flat" if mag == "Flat" else ("up" if bps > 0 else "down")
+-        return {
+-            "val_str": f"{bps:+.1f}bps",
+-            "mag": mag,
+-            "direction": direction,
+-            "flow": flow_direction(ticker, direction),
+-        }
+-    else:
+-        if not c_then:
+-            return None
+-        pct = (c_now - c_then) / c_then * 100
+-        mag = magnitude(abs(pct), pct_ladder)
+-        direction = "flat" if mag == "Flat" else ("up" if pct > 0 else "down")
+-        return {
+-            "val_str": f"{pct:+.2f}%",
+-            "mag": mag,
+-            "direction": direction,
+-            "flow": flow_direction(ticker, direction),
+-        }
++    pct = (c_now - c_then) / c_then * 100
++    mag = magnitude(abs(pct), pct_ladder)
++    direction = "flat" if mag == "Flat" else ("up" if pct > 0 else "down")
++    return {
++        "val_str": f"{pct:+.2f}%",
++        "mag": mag,
++        "direction": direction,
++        "flow": flow_direction(ticker, direction),
++    }
+ 
+ 
+ def build_report():
+@@ -453,8 +451,7 @@ def build_report():
+             closes = hist["Close"]
+             three_hr_ago = closes.iloc[max(0, len(closes) - 12)]
+             windows["3h"] = compute_window_metric(
+-                ticker, closes.iloc[-1], three_hr_ago,
+-                THRESHOLDS_3H.get(ticker), TNX_BPS_THRESHOLDS_3H,
++                ticker, closes.iloc[-1], three_hr_ago, THRESHOLDS_3H.get(ticker),
+             )
+ 
+         daily_hist = fetch_daily(ticker)
+@@ -462,13 +459,11 @@ def build_report():
+             closes_d = daily_hist["Close"]
+             if len(closes_d) > 3:
+                 windows["3d"] = compute_window_metric(
+-                    ticker, closes_d.iloc[-1], closes_d.iloc[-4],
+-                    THRESHOLDS_3D.get(ticker), TNX_BPS_THRESHOLDS_3D,
++                    ticker, closes_d.iloc[-1], closes_d.iloc[-4], THRESHOLDS_3D.get(ticker),
+                 )
+             if len(closes_d) > 30:
+                 windows["30d"] = compute_window_metric(
+-                    ticker, closes_d.iloc[-1], closes_d.iloc[-31],
+-                    THRESHOLDS_30D.get(ticker), TNX_BPS_THRESHOLDS_30D,
++                    ticker, closes_d.iloc[-1], closes_d.iloc[-31], THRESHOLDS_30D.get(ticker),
+                 )
+ 
+         extra_tags = ""
+@@ -477,43 +472,22 @@ def build_report():
+             if m:
+                 extra_tags += f" [{tf}: {m['val_str']}, {m['mag']}, {m['direction']}]"
+ 
+-        if ticker == "^TNX":
+-            bps = change * 100
+-            mag = magnitude(abs(bps), TNX_BPS_THRESHOLDS)
+-            target, into_word, outof_word = FLOW_WORDS[ticker]
+-            if mag == "Flat":
+-                statement = "little change / roughly flat"
+-                since_prev_flow = "flat"
+-            elif change > 0:
+-                # yield UP -> bond price DOWN -> money flows OUT of bonds
+-                statement = f"money flowing {outof_word} {target} -- {mag}"
+-                since_prev_flow = "out"
+-            else:
+-                # yield DOWN -> bond price UP -> money flows INTO bonds
+-                statement = f"money flowing {into_word} {target} -- {mag}"
+-                since_prev_flow = "in"
+-            lines.append(f"{label}: {last_price:.3f}% ({change:+.3f}, {bps:+.1f}bps) -- {statement}{extra_tags}")
+-            bucket = flow_flat if mag == "Flat" else (flow_out if change > 0 else flow_in)
+-            bucket.append(f"bonds ({mag.lower()})")
+-            value_str = f"{last_price:.3f}%"
+-            delta_str = f"{'▲' if change >= 0 else '▼'} {abs(change):.3f} · {change:+.1f}bps".replace(f"{change:+.1f}bps", f"{bps:+.1f}bps")
++        mag = magnitude(abs(pct), THRESHOLDS[ticker])
++        target, into_word, outof_word = FLOW_WORDS[ticker]
++        if mag == "Flat":
++            statement = "little change / roughly flat"
++            since_prev_flow = "flat"
++        elif change > 0:
++            statement = f"money flowing {into_word} {target} -- {mag}"
++            since_prev_flow = "in"
+         else:
+-            mag = magnitude(abs(pct), THRESHOLDS[ticker])
+-            target, into_word, outof_word = FLOW_WORDS[ticker]
+-            if mag == "Flat":
+-                statement = "little change / roughly flat"
+-                since_prev_flow = "flat"
+-            elif change > 0:
+-                statement = f"money flowing {into_word} {target} -- {mag}"
+-                since_prev_flow = "in"
+-            else:
+-                statement = f"money flowing {outof_word} {target} -- {mag}"
+-                since_prev_flow = "out"
+-            lines.append(f"{label}: {last_price:,.2f} ({change:+,.2f}, {pct:+.2f}%) -- {statement}{extra_tags}")
+-            bucket = flow_flat if mag == "Flat" else (flow_in if change > 0 else flow_out)
+-            bucket.append(f"{target} ({mag.lower()})")
+-            value_str = f"{last_price:,.2f}"
+-            delta_str = f"{'▲' if change >= 0 else '▼'} {abs(change):,.2f} · {pct:+.2f}%"
++            statement = f"money flowing {outof_word} {target} -- {mag}"
++            since_prev_flow = "out"
++        lines.append(f"{label}: {last_price:,.2f} ({change:+,.2f}, {pct:+.2f}%) -- {statement}{extra_tags}")
++        bucket = flow_flat if mag == "Flat" else (flow_in if change > 0 else flow_out)
++        bucket.append(f"{target} ({mag.lower()})")
++        value_str = f"{last_price:,.2f}"
++        delta_str = f"{'▲' if change >= 0 else '▼'} {abs(change):,.2f} · {pct:+.2f}%"
+ 
+         assets.append({
+             "ticker": ticker,
+@@ -632,9 +606,9 @@ def build_overall_summary(assets):
+ 
+ 
+ def biggest_mover(assets):
+-    """Largest abs since-prev-close % across ES=F, DXY, GC=F, BTC-USD (skip
+-    ^TNX, which is bps not %). Returns the asset dict, or None on a tie/no data."""
+-    candidates = [a for a in assets if not a.get("unavailable") and a["ticker"] != "^TNX"]
++    """Largest abs since-prev-close % across every available asset. Returns
++    the asset dict, or None on a tie/no data."""
++    candidates = [a for a in assets if not a.get("unavailable")]
+     if not candidates:
+         return None
+     candidates.sort(key=lambda a: abs(a["since_prev"]["pct"]), reverse=True)
+@@ -760,7 +734,7 @@ def render_candlestick_svg(ohlc, width=680, height=110, show_x_axis=False, n_tic
+ def render_row(asset, badge=False):
+     esc = html.escape
+     name = esc(asset["short_name"])
+-    ticker = esc(asset["ticker"]) if asset["ticker"] != "^TNX" else ""
++    ticker = esc(asset["ticker"])
+     badge_html = '<span class="badge">★ Biggest mover</span>' if badge else ""
+ 
+     flows_for_sentence = {}
+@@ -807,8 +781,7 @@ def render_table_row(asset):
+     esc = html.escape
+     cells = [esc(asset["short_name"]), esc(asset["value_str"])]
+     sp = asset["since_prev"]
+-    cells.append(f'{sp["pct"]:+.2f}% ({sp["mag"]})' if asset["ticker"] != "^TNX"
+-                 else f'{sp["pct"]:+.3f} ({sp["mag"]})')
++    cells.append(f'{sp["pct"]:+.2f}% ({sp["mag"]})')
+     for tf in TF_ORDER:
+         m = asset["windows"].get(tf)
+         cells.append(f'{esc(m["val_str"])} ({esc(m["mag"])})' if m else "n/a")
+@@ -883,6 +856,20 @@ def render_futures_card(futures, days=FUTURES_WINDOW_DAYS):
+     rows_html = "".join(body)
+     blurb = esc(build_futures_blurb(futures))
+ 
++    freshest = futures_freshness(futures)
++    if freshest is not None:
++        age_min = (datetime.now(timezone.utc) - freshest).total_seconds() / 60
++        stale_note = ""
++        if age_min > 90:
++            hrs = age_min / 60
++            stale_note = f' <span class="fut-stale">— {hrs:.1f}h behind, most recent run may have failed to fetch/commit</span>'
++        freshness_html = (
++            f'<div class="timestamp">Most recent hourly bar: {esc(freshest.strftime("%Y-%m-%d %H:%M UTC"))}'
++            f' ({age_min:.0f} min ago){stale_note}</div>'
++        )
++    else:
++        freshness_html = '<div class="timestamp">Most recent hourly bar: unavailable this run</div>'
++
+     return f'''  <div class="card">
+     <div class="card-head">
+       <div>
+@@ -890,6 +877,7 @@ def render_futures_card(futures, days=FUTURES_WINDOW_DAYS):
+         <p class="subtitle">Full board snapshot — hourly candlesticks over the last {days} days per symbol (bar count varies by trading calendar), across equity index, treasuries, metals, energy, agriculture, livestock and softs.</p>
+       </div>
+     </div>
++    {freshness_html}
+     <div class="fut-rows">
+ {rows_html}    </div>
+     <div class="blurb"><strong>Futures flow (last 3h):</strong> {blurb}</div>
+@@ -996,6 +984,7 @@ CSS = """
+   .fut-chart svg { display: block; width: 100%; height: 60px; }
+   .fut-chart-caption { font-size: 9.5px; color: var(--text-muted); text-align: right; }
+   .fut-na { flex: none; font-size: 11px; color: var(--text-muted); font-style: italic; }
++  .fut-stale { color: var(--div-out); font-weight: 600; }
+ """
+ 
+ SCRIPT = """
