@@ -1,16 +1,16 @@
 Cross-asset money flow snapshot
-S&P 500 futures (ES=F): 7,709.25 (-48.50, -0.63%) -- money flowing out of equities -- Medium [3d: +0.43%, Mild, up] [30d: +3.50%, Medium, up]
-Nasdaq 100 futures (NQ=F): 29,627.00 (+55.50, +0.19%) -- money flowing into tech/Nasdaq equities -- Mild [3d: +1.51%, Medium, up] [30d: +5.10%, Medium, up]
-10-Year T-Note futures (ZN=F): 107.44 (-0.17, -0.16%) -- money flowing out of Treasury notes -- Mild [3d: -0.22%, Mild, down] [30d: -1.05%, Mild, down]
+S&P 500 futures (ES=F): 7,706.75 (-51.00, -0.66%) -- money flowing out of equities -- Medium [3d: +0.39%, Mild, up] [30d: +3.47%, Medium, up]
+Nasdaq 100 futures (NQ=F): 29,624.75 (+53.25, +0.18%) -- money flowing into tech/Nasdaq equities -- Mild [3d: +1.50%, Medium, up] [30d: +5.09%, Medium, up]
+10-Year T-Note futures (ZN=F): 107.42 (-0.19, -0.17%) -- money flowing out of Treasury notes -- Mild [3d: -0.23%, Mild, down] [30d: -1.06%, Mild, down]
 US Dollar Index (DXY): 99.18 (+0.02, +0.02%) -- little change / roughly flat [3h: +0.05%, Mild, up] [3d: -0.39%, Mild, down] [30d: -2.30%, Medium, down]
-Gold futures (GC=F): 4,469.10 (-44.70, -0.99%) -- money flowing out of gold -- Medium [3d: +2.35%, Medium, up] [30d: +9.67%, Heavy, up]
-WTI Crude Oil futures (CL=F): 92.39 (+0.37, +0.40%) -- money flowing into crude oil -- Mild [3d: +1.51%, Medium, up] [30d: +11.83%, Medium, up]
-Bitcoin (BTC-USD): 79,326.01 (+161.37, +0.20%) -- little change / roughly flat [3h: +0.37%, Mild, up] [3d: -0.43%, Flat, flat] [30d: +22.22%, Heavy, up]
+Gold futures (GC=F): 4,464.50 (-49.30, -1.09%) -- money flowing out of gold -- Medium [3d: +2.25%, Medium, up] [30d: +9.57%, Heavy, up]
+WTI Crude Oil futures (CL=F): 92.52 (+0.50, +0.54%) -- money flowing into crude oil -- Mild [3d: +1.66%, Medium, up] [30d: +12.00%, Medium, up]
+Bitcoin (BTC-USD): 79,286.92 (+122.28, +0.15%) -- little change / roughly flat [3h: +0.32%, Mild, up] [3d: -0.48%, Flat, flat] [30d: +22.16%, Heavy, up]
 
 In: tech/Nasdaq equities (mild), crude oil (mild).
 Out: equities (medium), Treasury notes (mild), gold (medium).
 Flat: the dollar (flat), BTC (flat).
-As of: 2026-09-08 01:10 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-09-08 01:14 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
