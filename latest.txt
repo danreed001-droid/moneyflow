@@ -1,16 +1,16 @@
 Cross-asset money flow snapshot
-S&P 500 futures (ES=F): 7,805.75 (+42.25, +0.54%) -- money flowing into equities -- Medium [3h: +0.00%, Flat, flat] [3d: -0.33%, Mild, down] [30d: -0.21%, Flat, flat]
-Nasdaq 100 futures (NQ=F): 30,921.75 (+131.50, +0.43%) -- money flowing into tech/Nasdaq equities -- Medium [3h: +0.10%, Mild, up] [3d: -0.34%, Flat, flat] [30d: +2.43%, Mild, up]
-10-Year T-Note futures (ZN=F): 104.97 (+0.27, +0.25%) -- money flowing into Treasury notes -- Medium [3h: +0.24%, Medium, up] [3d: -0.97%, Medium, down] [30d: -3.63%, Heavy, down]
-US Dollar Index (DXY): 101.04 (-0.24, -0.24%) -- money flowing out of the dollar -- Medium [3h: +0.00%, Flat, flat] [3d: +0.43%, Mild, up] [30d: +1.08%, Mild, up]
-Gold futures (GC=F): 4,320.50 (+14.80, +0.34%) -- money flowing into gold -- Mild [3h: +0.02%, Flat, flat] [3d: -1.28%, Medium, down] [30d: -2.26%, Mild, down]
-WTI Crude Oil futures (CL=F): 92.44 (-0.68, -0.73%) -- money flowing out of crude oil -- Mild [3h: +0.49%, Medium, up] [3d: -2.27%, Medium, down] [30d: +13.77%, Heavy, up]
-Bitcoin (BTC-USD): 83,947.16 (-145.98, -0.17%) -- little change / roughly flat [3h: +0.05%, Flat, flat] [3d: -2.58%, Mild, down] [30d: +6.23%, Mild, up]
+S&P 500 futures (ES=F): 7,803.75 (+40.25, +0.52%) -- money flowing into equities -- Medium [3h: +0.00%, Flat, flat] [3d: -0.36%, Mild, down] [30d: -0.24%, Flat, flat]
+Nasdaq 100 futures (NQ=F): 30,889.25 (+99.00, +0.32%) -- money flowing into tech/Nasdaq equities -- Mild [3h: +0.10%, Mild, up] [3d: -0.45%, Mild, down] [30d: +2.32%, Mild, up]
+10-Year T-Note futures (ZN=F): 104.86 (+0.16, +0.15%) -- money flowing into Treasury notes -- Mild [3h: +0.24%, Medium, up] [3d: -1.08%, Heavy, down] [30d: -3.73%, Heavy, down]
+US Dollar Index (DXY): 100.97 (-0.31, -0.30%) -- money flowing out of the dollar -- Medium [3h: +0.00%, Flat, flat] [3d: +0.37%, Mild, up] [30d: +1.01%, Mild, up]
+Gold futures (GC=F): 4,321.20 (+15.50, +0.36%) -- money flowing into gold -- Mild [3h: +0.02%, Flat, flat] [3d: -1.26%, Medium, down] [30d: -2.24%, Mild, down]
+WTI Crude Oil futures (CL=F): 92.41 (-0.71, -0.76%) -- money flowing out of crude oil -- Mild [3h: +0.49%, Medium, up] [3d: -2.30%, Medium, down] [30d: +13.74%, Heavy, up]
+Bitcoin (BTC-USD): 84,009.98 (-83.16, -0.10%) -- little change / roughly flat [3h: +0.04%, Flat, flat] [3d: -0.44%, Flat, flat] [30d: +4.68%, Mild, up]
 
-In: equities (medium), tech/Nasdaq equities (medium), Treasury notes (medium), gold (mild).
+In: equities (medium), tech/Nasdaq equities (mild), Treasury notes (mild), gold (mild).
 Out: the dollar (medium), crude oil (mild).
 Flat: BTC (flat).
-As of: 2026-09-26 03:44 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-09-26 07:21 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
