@@ -5,12 +5,12 @@ Nasdaq 100 futures (NQ=F): 31,061.75 (+180.50, +0.58%) -- money flowing into tec
 US Dollar Index (DXY): 101.93 (-0.01, -0.01%) -- little change / roughly flat [3h: -0.01%, Flat, flat] [3d: +0.55%, Medium, up] [30d: +3.06%, Medium, up]
 Gold futures (GC=F): 4,162.30 (-43.20, -1.03%) -- money flowing out of gold -- Medium [3h: -0.17%, Mild, down] [3d: -0.42%, Mild, down] [30d: -8.95%, Medium, down]
 WTI Crude Oil futures (CL=F): 91.11 (-1.52, -1.64%) -- money flowing out of crude oil -- Medium [3h: +0.01%, Flat, flat] [3d: +1.94%, Medium, up] [30d: +3.73%, Mild, up]
-Bitcoin (BTC-USD): 84,848.47 (+343.59, +0.41%) -- little change / roughly flat [3h: -0.17%, Flat, flat] [3d: +1.55%, Mild, up] [30d: +4.40%, Mild, up]
+Bitcoin (BTC-USD): 84,734.38 (+229.50, +0.27%) -- little change / roughly flat [3h: -0.29%, Flat, flat] [3d: +1.41%, Mild, up] [30d: +4.26%, Mild, up]
 
 In: equities (medium), tech/Nasdaq equities (medium).
 Out: Treasury notes (mild), gold (medium), crude oil (medium).
 Flat: the dollar (flat), BTC (flat).
-As of: 2026-10-03 20:38 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-10-03 20:51 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
