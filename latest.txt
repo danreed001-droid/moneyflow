@@ -5,12 +5,12 @@ Nasdaq 100 futures (NQ=F): 31,061.75 (+180.50, +0.58%) -- money flowing into tec
 US Dollar Index (DXY): 101.92 (-0.01, -0.01%) -- little change / roughly flat [3d: +0.55%, Medium, up] [30d: +3.06%, Medium, up]
 Gold futures (GC=F): 4,162.30 (-43.20, -1.03%) -- money flowing out of gold -- Medium [3d: -0.42%, Mild, down] [30d: -8.95%, Medium, down]
 WTI Crude Oil futures (CL=F): 91.11 (-1.52, -1.64%) -- money flowing out of crude oil -- Medium [3d: +1.94%, Medium, up] [30d: +3.73%, Mild, up]
-Bitcoin (BTC-USD): 85,303.30 (+561.08, +0.66%) -- money flowing into BTC -- Mild [3h: +0.23%, Flat, flat] [3d: +0.53%, Flat, flat] [30d: +7.07%, Mild, up]
+Bitcoin (BTC-USD): 85,312.21 (+569.99, +0.67%) -- money flowing into BTC -- Mild [3h: +0.23%, Flat, flat] [3d: +0.54%, Flat, flat] [30d: +7.08%, Mild, up]
 
 In: equities (medium), tech/Nasdaq equities (medium), BTC (mild).
 Out: Treasury notes (mild), gold (medium), crude oil (medium).
 Flat: the dollar (flat).
-As of: 2026-10-04 15:40 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-10-04 17:23 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
@@ -52,11 +52,11 @@ Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's tra
   HE=F    Lean Hogs            70.125 (-13.325, -15.97%)  [144h]  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▇▇▇▇▇▇▇▇▇▃▃▃▇▆▆▆▂▁▅▅▅▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
   LE=F    Live Cattle          221.475 (+9.000, +4.24%)  [144h]  ▂▂▂▂▂▂▁▁▁▁▁▂▁▁▁▁▁▁▃▃▃▃▂▂▃▂▂▂▂▂▂▃▃▃▄▄▃▃▃▃▃▄▅▅▄▃▄▅▆▆▅▅▅▅▆▆▇█▇▇▇▇▇▇▇▇▆▆▆▆▅▅▅▅▅▄▃▃▃▃▃▃▃▄▅▅▅▆▆▆▆▅▅▅▅▅▆▆▆▆▆▆▆▆▆▆▆▆▅▆▆▆▆▆▆▆▆▆▅▆▆▆▆▆▅▅▆▇▇▇▆▆▆▆▆▆▇▇▆▆▆▆▆▆
   -- Softs --
-  CC=F    Cocoa                5,609.000 (-1,095.000, -16.33%)  [237h]  ▇▇▇▇▇▇▇█▇▇▇▆▇▆▇▆▆▆▆▆▅▅▅▆▆▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▁▂▂▂▂▂▂▂▁▂▂▂▁▁▁▁▁▂▂▂▂▂▂▂▁▁▁▂▂▂▂▂▂▂▂▂▂▃▃▃▃▃▃▃▃▃▃▂▂▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▃
-  KC=F    Coffee               290.750 (-20.600, -6.62%)  [237h]  ▇▇▇▇▇▇█▇▆▇▅▆▆▆▇▇▇▆▆▅▅▆▆▅▅▅▅▅▄▄▄▅▄▅▅▄▄▅▅▅▅▄▅▅▅▄▄▄▄▄▄▄▃▄▄▄▄▃▄▄▄▅▅▅▅▄▄▃▃▃▃▃▃▃▄▄▄▃▃▃▃▃▄▃▃▃▃▂▃▃▃▃▃▃▄▄▃▃▃▄▃▃▃▃▃▂▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▂▁▂▂▂▁▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▂▂▂▃▃▄▃▃▃▃▃▃▃▃▃▃▃▄▄▄▅▅▅▄▄▄▄▄▄▃▃▃▄▃▃▃▃▃▃▄▄▄▅▅▄▄▃▄▄
+  CC=F    Cocoa                5,670.000 (-1,034.000, -15.42%)  [237h]  ▇▇▇▇▇▇▇█▇▇▇▆▇▆▇▆▆▆▆▆▅▅▅▆▆▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▁▂▂▂▂▂▂▂▁▂▂▂▁▁▁▁▁▂▂▂▂▂▂▂▁▁▁▂▂▂▂▂▂▂▂▂▂▃▃▃▃▃▃▃▃▃▃▂▂▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▃
+  KC=F    Coffee               288.750 (-22.600, -7.26%)  [237h]  ▇▇▇▇▇▇█▇▆▇▅▆▆▆▇▇▇▆▆▅▅▆▆▅▅▅▅▅▄▄▄▅▄▅▅▄▄▅▅▅▅▄▅▅▅▄▄▄▄▄▄▄▃▄▄▄▄▃▄▄▄▅▅▅▅▄▄▃▃▃▃▃▃▃▄▄▄▃▃▃▃▃▄▃▃▃▃▂▃▃▃▃▃▃▄▄▃▃▃▄▃▃▃▃▃▂▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▂▁▂▂▂▁▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▂▂▂▃▃▄▃▃▃▃▃▃▃▃▃▃▃▄▄▄▅▅▅▄▄▄▄▄▄▃▃▃▄▃▃▃▃▃▃▄▄▄▅▅▄▄▃▄▃
   CT=F    Cotton               78.190 (-14.600, -15.73%)  [88h]  ▇▇█▇▇▆▇▆▆▅▆▅▅▅▅▅▄▅▅▅▅▄▄▅▅▅▅▅▅▅▅▅▅▅▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▂▂▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁
   LBS=F   Lumber               DATA UNAVAILABLE
-  OJ=F    Orange Juice         137.250 (-7.700, -5.31%)  [144h]  ▃▃▃▂▂▂▁▂▂▃▃▃▄▄▄▅▅▄▅▅▆▆▆▆▇▇█▇▇▆▇▅▆▅▄▄▅▅▅▅▅▄▃▃▃▄▃▄▄▄▄▄▃▃▄▃▃▅▆▆▆▇▆▅▆▆▅▄▃▃▃▄▃▃▂▂▂▂▂▃▃▂▂▃▃▄▄▄▄▄▅▅▄▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▆▅▅▅▅▅▅▆▅▄▅▅▅▅▆▆▆▆▇▇▇▇▆▅▄▄▃▂▂▂▂▂▂▁▁▁
+  OJ=F    Orange Juice         135.200 (-9.750, -6.73%)  [144h]  ▃▃▃▂▂▂▁▂▂▃▃▃▄▄▄▅▅▄▅▅▆▆▆▇▇▇█▇▇▇▇▅▆▅▄▅▅▅▅▅▅▄▃▃▃▄▄▄▄▄▄▄▃▃▄▃▃▅▆▆▆▇▆▅▆▆▅▄▃▃▃▄▄▃▂▂▂▂▃▃▃▂▃▃▃▄▄▄▄▄▅▅▄▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▆▅▅▅▅▅▅▆▅▄▅▅▅▅▆▆▆▆▇▇▇▇▆▅▄▄▃▃▂▂▂▂▃▁▁▁
   SB=F    Sugar                19.910 (+2.180, +12.30%)  [237h]  ▁▁▁▁▁▄▅▄▁▁▁▁▂▁▂▃▂▂▃▃▂▂▄▄▄▄▃▂▁▁▂▁▁▁▂▁▁▂▂▃▃▂▂▂▂▁▂▃▂▁▁▁▁▁▂▅▅▆▆▆▅▅▅▅▅▃▃▃▇▇▇▆▆▇▇▇▇▆▆▆▆▆▅▅▅▅▂▅▅▅▅▅▅▅▄▄▅▄▅▂▂▁▁▁▁▄▄▃▄▃▄▄▅▅▄▄▄▄▄▄▄▃▄▄▃▃▂▃▂▃▂▃▃▃▂▂▂▂▂▂▂▃▃▃▃▃▃▂▂▂▂▃▃▃▃▃▃▂▂▃▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▃▃▃▃▄▃▃▃▃▃▃▃▃▃▃▄▄▄▃▃▃▃▃▃▃▃▃▄▄▄▄▄▅▄▄▄▃▃▃▄▄▃▄▄▄▄▄▄▄▄▄▄▅▆▆▅▅▆▆▇▇█
 
-Over the last 3 hours, money across the futures board is flowing into Energy, Agriculture; flowing out of Metals, Livestock; roughly flat in Equity Index, Treasuries; mixed (no consistent direction) in Softs. Biggest 3h mover: Orange Juice (OJ=F) -3.45%, Heavy.
+Over the last 3 hours, money across the futures board is flowing into Energy, Agriculture; flowing out of Metals, Livestock, Softs; roughly flat in Equity Index, Treasuries. Biggest 3h mover: Orange Juice (OJ=F) -4.89%, Heavy.
