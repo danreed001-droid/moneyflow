@@ -1,16 +1,16 @@
 Cross-asset money flow snapshot
-S&P 500 futures (ES=F): 7,404.00 (+13.50, +0.18%) -- money flowing into equities -- Mild [3h: -0.40%, Heavy, down] [3d: -2.54%, Heavy, down] [30d: -5.12%, Medium, down]
-Nasdaq 100 futures (NQ=F): 27,107.50 (+85.25, +0.32%) -- money flowing into tech/Nasdaq equities -- Mild [3h: -0.37%, Medium, down] [3d: -4.23%, Heavy, down] [30d: -12.24%, Heavy, down]
-10-Year T-Note futures (ZN=F): 107.12 (-0.23, -0.22%) -- money flowing out of Treasury notes -- Mild [3h: +0.01%, Flat, flat] [3d: +0.59%, Medium, up] [30d: +2.16%, Medium, up]
-US Dollar Index (DXY): 102.28 (+0.52, +0.51%) -- money flowing into the dollar -- Heavy [3h: +0.01%, Flat, flat] [3d: +0.40%, Mild, up] [30d: +1.30%, Mild, up]
-Gold futures (GC=F): 4,079.50 (+25.70, +0.63%) -- money flowing into gold -- Medium [3h: -0.06%, Flat, flat] [3d: +3.53%, Heavy, up] [30d: -5.59%, Medium, down]
-WTI Crude Oil futures (CL=F): 90.34 (-1.11, -1.21%) -- money flowing out of crude oil -- Medium [3h: -0.36%, Mild, down] [3d: -5.98%, Heavy, down] [30d: -2.24%, Mild, down]
-Bitcoin (BTC-USD): 75,883.67 (+101.35, +0.13%) -- little change / roughly flat [3h: +0.04%, Flat, flat] [3d: -1.89%, Mild, down] [30d: -8.88%, Mild, down]
+S&P 500 futures (ES=F): 7,402.00 (+11.50, +0.16%) -- money flowing into equities -- Mild [3h: -0.40%, Heavy, down] [3d: -2.56%, Heavy, down] [30d: -5.15%, Medium, down]
+Nasdaq 100 futures (NQ=F): 27,085.25 (+63.00, +0.23%) -- money flowing into tech/Nasdaq equities -- Mild [3h: -0.37%, Medium, down] [3d: -4.31%, Heavy, down] [30d: -12.31%, Heavy, down]
+10-Year T-Note futures (ZN=F): 107.11 (-0.25, -0.23%) -- money flowing out of Treasury notes -- Mild [3h: +0.01%, Flat, flat] [3d: +0.57%, Medium, up] [30d: +2.15%, Medium, up]
+US Dollar Index (DXY): 102.30 (+0.54, +0.53%) -- money flowing into the dollar -- Heavy [3h: +0.01%, Flat, flat] [3d: +0.42%, Mild, up] [30d: +1.32%, Mild, up]
+Gold futures (GC=F): 4,074.90 (+21.10, +0.52%) -- money flowing into gold -- Medium [3h: -0.06%, Flat, flat] [3d: +3.41%, Heavy, up] [30d: -5.70%, Medium, down]
+WTI Crude Oil futures (CL=F): 90.83 (-0.62, -0.68%) -- money flowing out of crude oil -- Mild [3h: -0.36%, Mild, down] [3d: -5.47%, Heavy, down] [30d: -1.71%, Flat, flat]
+Bitcoin (BTC-USD): 75,946.02 (+214.98, +0.28%) -- little change / roughly flat [3h: +0.24%, Flat, flat] [3d: -1.81%, Mild, down] [30d: -8.80%, Mild, down]
 
 In: equities (mild), tech/Nasdaq equities (mild), the dollar (heavy), gold (medium).
-Out: Treasury notes (mild), crude oil (medium).
+Out: Treasury notes (mild), crude oil (mild).
 Flat: BTC (flat).
-As of: 2026-11-07 01:38 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-11-07 06:56 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
@@ -52,7 +52,7 @@ Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's tra
   HE=F    Lean Hogs            53.375 (-17.725, -24.93%)  [150h]  █▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▆▇▆▆▇▇▆▆▆▆▆▆▆▆▇▆▆▆▆▆▆▆▆▆▆▆▆▆▅▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▂▂▂▂▂▃▃▃▃▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁
   LE=F    Live Cattle          214.175 (-4.875, -2.23%)  [150h]  ▃▃▄▃▃▃▄▄▄▄▅▅▄▄▄▅▅▅▅▄▄▄▅▅▅▅▅▆▆▆▆▅▅▆▆▆▆▅▅▅▆▆▆▅▅▅▅▅▅▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▇▇▇▇▇█▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▆▆▆▆▆▆▅▅▅▅▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▂▂▁▁▁▁▁▁▁▁▁▁
   -- Softs --
-  CC=F    Cocoa                5,239.000 (-378.000, -6.73%)  [245h]  ▄▄▄▅▅▅▆▆▆▆▆▆▆▆▅▅▅▅▅▆▆▆▅▅▅▄▄▄▄▄▃▄▄▃▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▆▅▅▄▅▅▄▅▅▅▅▇▆▇▆▆▆▆▆▆▆▇▇█▇▆▆▅▅▅▇▇▇▇▆▆▆▆▆▆▅▆▆▆▆▆▅▅▅▅▄▅▅▄▄▅▅▅▅▅▅▅▅▅▇▇▆▆▆▆▅▅▅▅▅▅▆▆▆▆▆▅▅▄▅▄▄▄▄▄▅▄▄▄▄▄▅▄▄▄▄▃▃▃▃▃▃▃▃▃▄▄▄▄▃▄▄▄▄▃▃▃▃▃▃▃▃▃▄▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▄▃▃▃▃▃▃▃▃▃▂▃▃▃▃▃▃▃▃▃▂▂▃▂▂▂▃▃▃▃▂▂▁▁▁▁▁▁▂▁▁▁▁▂▂▂▂▂▁▁
+  CC=F    Cocoa                5,239.000 (-378.000, -6.73%)  [245h]  ▄▄▄▅▅▅▆▆▆▆▆▆▆▆▅▅▅▅▅▆▆▆▅▅▅▄▄▄▄▄▃▄▄▃▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▆▅▅▄▅▅▄▅▅▅▅▇▆▇▆▆▆▆▆▆▆▇▇█▇▆▆▅▅▅▇▇▇▇▆▆▆▆▆▆▅▆▆▆▆▆▅▅▅▅▄▅▅▄▄▅▅▅▅▅▅▅▅▅▇▇▆▆▆▆▅▅▅▅▅▅▆▆▆▆▆▅▅▄▅▄▄▄▄▄▅▄▄▄▄▄▅▄▄▄▄▃▃▃▃▃▃▃▃▃▄▄▄▄▃▄▄▄▄▃▃▃▃▃▃▃▃▃▄▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▄▃▃▃▃▃▃▃▃▃▂▃▃▃▃▃▃▃▃▃▂▂▃▂▂▂▃▃▃▃▂▂▁▁▁▁▁▁▂▁▁▁▁▂▂▂▂▁▁▁
   KC=F    Coffee               280.150 (-14.650, -4.97%)  [245h]  ▄▄▅▄▄▄▄▄▄▄▄▄▄▄▄▅▆▆▅▅▆▅▅▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▄▃▃▃▃▃▃▃▃▃▃▃▃▃▄▄▄▄▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▄▄▄▄▄▄▄▄▄▄▅▆▆▆▆▆▅▅▅▆▆▆▆▇▆▆▇▇▇▇▇▇▇▇▇▇█▇▇▆▆▇▇▇▇▆▇▇▇▇▇▇▆▆▆▆▅▆▆▇▇▇▇▇▆▆▇▆▆▆▆▅▅▅▄▅▅▅▅▅▅▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▃▃▃▂▂▃▃▃▃▃▃▃▄▃▃▃▃▃▄▄▄▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▂▂▂▂▂▂
   CT=F    Cotton               78.540 (-1.210, -1.52%)  [90h]  ▄▄▄▅▅▆▆▆▆▅▅▅▆▅▅▅▆▆▆▅▄▅▅▅▅▅▅▅█▆▄▅▅▅▅▅▅▅▅▅▅▅▅▅▆▆▇▇▆▆▅▅▅▄▄▃▂▂▃▂▁▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▃▃▂▂▃▂▂▂▃▂▂
   LBS=F   Lumber               DATA UNAVAILABLE
