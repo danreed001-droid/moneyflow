@@ -5,11 +5,11 @@ Nasdaq 100 futures (NQ=F): 28,034.75 (-332.00, -1.17%) -- money flowing out of t
 US Dollar Index (DXY): 103.41 (+0.26, +0.25%) -- money flowing into the dollar -- Medium [3d: +1.15%, Medium, up] [30d: +1.45%, Mild, up]
 Gold futures (GC=F): 3,886.30 (-30.80, -0.79%) -- money flowing out of gold -- Medium [3d: -3.57%, Heavy, down] [30d: -6.63%, Medium, down]
 WTI Crude Oil futures (CL=F): 88.56 (+0.31, +0.35%) -- money flowing into crude oil -- Mild [3d: +2.93%, Medium, up] [30d: -2.80%, Mild, down]
-Bitcoin (BTC-USD): 65,179.66 (+1,069.70, +1.67%) -- money flowing into BTC -- Medium [3h: +1.08%, Medium, up] [3d: -8.64%, Heavy, down] [30d: -20.03%, Heavy, down]
+Bitcoin (BTC-USD): 65,395.43 (+1,285.47, +2.01%) -- money flowing into BTC -- Medium [3h: +0.14%, Flat, flat] [3d: -8.34%, Heavy, down] [30d: -19.76%, Medium, down]
 
 In: the dollar (medium), crude oil (mild), BTC (medium).
 Out: equities (medium), tech/Nasdaq equities (heavy), Treasury notes (mild), gold (medium).
-As of: 2026-11-15 09:00 UTC (yfinance/Yahoo real-time feed).
+As of: 2026-11-15 12:37 UTC (yfinance/Yahoo real-time feed).
 Automated informational snapshot, not financial advice.
 
 Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's trading calendar):
@@ -53,7 +53,7 @@ Futures watchlist (hourly OHLC, last 30 days -- bar count varies by symbol's tra
   -- Softs --
   CC=F    Cocoa                5,123.000 (-641.000, -11.12%)  [245h]  ▆▆▆▅▆▆▅▆▆▆▆▇▇▇▇▇▆▆▆▆▇▇▇█▇▇▇▆▆▆▇▇▇▇▇▆▆▆▆▆▆▆▆▇▇▆▆▆▆▆▅▆▆▅▅▆▆▆▆▆▆▆▆▆▇▇▇▆▆▆▆▆▆▆▆▆▆▇▇▇▆▆▆▅▆▅▅▅▅▅▆▅▅▅▅▅▆▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▄▅▅▅▅▅▅▅▅▅▅▄▄▄▅▅▅▄▅▅▅▅▅▄▅▅▅▄▄▄▅▅▅▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▄▄▃▃▃▃▄▄▄▄▃▃▃▃▃▃▃▃▃▃▃▃▃▁▁▂▂▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▂▃▃▃▃▃▂▂▃▃▄▄▄▄▃▄▃
   KC=F    Coffee               279.250 (-7.850, -2.73%)  [245h]  ▄▃▃▃▄▃▄▄▄▄▄▄▄▄▄▄▄▄▄▄▅▄▅▅▆▅▅▅▅▅▅▅▄▄▅▅▄▄▅▅▆▆▆▆▆▆▆▆▆▆▆▆▇▆▆▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▇▇▇▆▇▇▇▇▇▇▆▆▆▆▆▆▆▇▇▇▇▇▇▇▇▇▆▆▆▅▆▅▅▅▅▅▅▅▅▅▄▅▄▄▄▅▅▄▄▄▃▄▃▃▃▄▄▄▄▃▃▄▄▃▄▃▄▄▄▄▄▄▄▄▅▅▄▄▄▄▄▄▄▄▄▅▅▄▄▃▃▃▃▃▃▃▃▃▃▃▂▃▃▃▃▃▃▃▃▃▃▂▂▂▂▁▁▂▃▃▃▃▃▃▃▂▂▃▃▂▂▁▁▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▃
-  CT=F    Cotton               79.020 (-1.190, -1.48%)  [89h]  ▄▃▄▄▄▅▄▄▄▆▅▄▄▄▅▄▄▄▄▄▄▄▄▄▅▅▅▅▅▆▆▅▅▄▄▄▃▃▃▂▃▂▁▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▃▂▂▂▂▂▂▂▂▂▂▂▃▃▂▇▇▂▂▇▇▇▇▇▂▇█▃
+  CT=F    Cotton               78.680 (-1.530, -1.91%)  [90h]  ▄▃▄▄▄▅▄▄▄▆▅▄▄▄▅▄▄▄▄▄▄▄▄▄▅▅▅▅▅▆▆▅▅▄▄▄▃▃▃▂▃▂▁▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▃▂▂▂▂▂▂▂▂▂▂▂▃▃▂▇▇▂▂▇▇▇▇▇▂▇█▃▂
   LBS=F   Lumber               DATA UNAVAILABLE
   OJ=F    Orange Juice         136.850 (-11.600, -7.81%)  [150h]  ▆▇▇█▇▇▅▄▄▄▄▄▃▃▃▄▅▄▄▄▄▄▃▄▄▃▃▃▃▃▄▄▅▅▅▅▆▇▆▆▆▄▄▄▄▄▅▄▆▅▅▅▄▅▄▄▄▄▄▃▅▅▄▄▄▂▅▆▅▄▄▃▅▅▄▄▅▅▅▄▃▂▂▂▃▂▂▁▁▁▂▃▂▃▃▃▄▄▄▄▄▄▄▄▄▃▂▂▃▂▂▂▂▂▂▂▂▃▂▃▃▄▅▅▅▄▄▅▆▆▆▅▅▅▄▅▅▆▅▄▄▄▃▃▃▂▃▂▂▂
   SB=F    Sugar                18.400 (-1.780, -8.82%)  [241h]  ▅▆▆▆▆▆▇▇▇▇▇▆▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▇▇▇▇█▇█▇▇▇▇▇▆▆▆▇▇▇▆▆▆▇▆▆▆▆▆▆▇▆▆▆▆▆▆▆▆▆▇▇▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▅▅▅▆▆▆▆▆▅▅▆▆▄▅▄▄▄▃▃▃▃▄▃▄▃▃▃▃▄▄▄▄▄▄▄▄▄▄▅▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▂▂▂▂▃▂▂▂▂▂▂▁▂▂▁▁▁▁▁▁▁▁▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▂▁▁▁▁▁▁▁▁▁▁▂▁▁▂▂▂▂▂▂▂
